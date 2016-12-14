@@ -1,9 +1,9 @@
 
 .data
 
-	var1: .byte 42		#var1 est un octet en mémoire de valeur 42
-	var2: .byte 4		#var2 est un octet en mémoire de valeur 4
-	result: .space 1	#result est un octet vide en mémoire
+	var1: .word 42		#var1 est un word en mémoire de valeur 42
+	var2: .word 4		#var2 est un word en mémoire de valeur 4
+	result: .space 4	#result est un 4 octets vides en mémoire
 
 .text
 
