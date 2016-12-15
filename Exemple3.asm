@@ -13,8 +13,8 @@ main:
 		sll $t2, $t2, 16	#décalage à gauche de 16 bits de t2
 		and $t2, $t1, $t2	#t2 = t1 & t2
 		
-		#rotr $t4, $t2, 31	#instruction pas implémentée dans le simu, miroir de t2 dans t4
-		li $t4, 0x8003		#<- remplacement en dur pour la simulation
+		#rotr $t4, $t2, 16	#instruction pas implémentée dans le simu, on décale à droite de 16 bits mais on récupère ces bits à gauche
+		li $t4, 0x0000C001	#<- remplacement en dur pour la simulation
 		
 		mult $t4, $t4		#multiplication t4 * t4
 		mflo $t1		#on récupère LO (ici les 32 bits faibles du résultat de la multiplication)
