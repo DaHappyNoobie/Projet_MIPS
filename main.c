@@ -1,34 +1,37 @@
 #include "consoleEtFichier.h"
 #include "encodage.h"
+#include "affichageConsole.h"
 
-
-void minusculeStringCommande();
-void affichageBinaireCommande();
 
 int main() {
 
-	int sortieBoucle = 0;
-	int mode = 0;
+	char sortieBoucle = '0';
+	char mode = 's';
 
 	FILE * ficOutB = fopen("fichierSortieBinaire.txt", "a");
 	FILE * ficOutH = fopen("fichierSortieHexa.txt", "a");
 	FILE * ficIn = fopen("fichierEntree.txt", "r");
 
-	printf("\nChoix du mode :\n\t-entree des commandes dans la console (1)\n\t-lecture d'un fichier de commandes(2)");
-	scanf("%d",&mode);
+	do {
+		printf("\nChoix du mode :\n\t-entree des commandes dans la console (1)\n\t-lecture d'un fichier de commandes(2)\n\t> ");
+		scanf("%c",&mode);
+	}while(mode != '0' && mode != '1');
 
-	if(mode == 1) {
-		while(sortieBoucle==0) {
+	if(mode == '1') {
+		while(sortieBoucle == '0') {
 			consoleLectureCommande();
+			affichageStringCommande();
 			minusculeStringCommande();
 			decodageInstruction();
 			affichageBinaireCommande();
 
-			printf("\nContinuer? OUI (0) ou NON (1)");
-			scanf("%d",&sortieBoucle);
+			do {
+				printf("\nContinuer? OUI (0) ou NON (1) > ");
+				scanf("%c",&sortieBoucle);
+			}while(sortieBoucle != '0' && sortieBoucle != '1');
 		}		
 	}else {
-		while(sortieBoucle==0) {
+		while(sortieBoucle == '0') {
 			printf("/1");
 			fichierLectureCommande(ficIn);
 			affichageStringCommande();
@@ -47,48 +50,18 @@ int main() {
 			if(ecritUCharTab(ficOutH, 'h')) printf("\nEcriture H reussie.");
 			else printf("\nErreur d'ecriture H.");
 
-			printf("\nContinuer? OUI (0) ou NON (1)");
-			scanf("%d",&sortieBoucle);
+			do {
+				printf("\nContinuer? OUI (0) ou NON (1) > ");
+				scanf("%c",&sortieBoucle);
+			}while(sortieBoucle != '0' && sortieBoucle != '1');
 		}			
 	}
 
-	printf("\n");
+	printf("\nAu revoir\n");
 
 	fclose (ficIn);
 	fclose (ficOutB);
 	fclose (ficOutH);
 
 	return(0);
-}
-
-void affichageBinaireCommande() {
-	
-	char c;
-
-	printf("\n");
-
-	for(int i=31; i>-1; i--) {
-		c = commandeBinaire[i];
-		printf("%c", c);
-	}
-
-	printf("\nfin");
-}
-
-void minusculeStringCommande(void) {
-
-	int i=0;
-	char c;	
-	c = commande[i];
-	
-	do {
-		if ((commande[i]>=0x41) && (commande[i]<0x5B)) {
-
-			commande[i] = commande[i] + 0x20;
-		}
-
-		i++;
-		c = commande[i];
-
-	}while(c != '\n' && c!= '\0' && c != EOF);
 }
