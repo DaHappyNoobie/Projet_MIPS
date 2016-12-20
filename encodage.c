@@ -202,30 +202,30 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 
 	/* Sa */
 	if (operandes[3] == '1') {
-		encodageInstructionRegistre(&indice,1);
+		encodageInstructionValeur(&indice,1);
 	} else {
-		encodageInstructionRegistre(&indice,0);
+		encodageInstructionValeur(&indice,0);
 	}	
 
 	/* Rt */
 	if (operandes[1] == '1') {
-		encodageInstructionRegistre(&indice,1);
+		encodageInstructionRegistre(&indice,20,1);
 	} else {
-		encodageInstructionRegistre(&indice,0);
+		encodageInstructionRegistre(&indice,20,0);
 	}
 
 	/* Rs */
 	if (operandes[0] == '1') {
-		encodageInstructionRegistre(&indice,1);
+		encodageInstructionRegistre(&indice,25,1);
 	} else {
-		encodageInstructionRegistre(&indice,0);
+		encodageInstructionRegistre(&indice,25,0);
 	}
-		
+
 	/* Rd */
 	if (operandes[2] == '1') {
-		encodageInstructionRegistre(&indice,1);
+		encodageInstructionRegistre(&indice,15,1);
 	} else {
-		encodageInstructionRegistre(&indice,0);
+		encodageInstructionRegistre(&indice,15,0);
 	}		
 
 	/* Function */
@@ -293,23 +293,43 @@ void encodageInstructionJ() {
 	printf("\nJ");
 }
 
-void encodageInstructionRegistre(int *indice, int ordre) {
+void encodageInstructionValeur(int *indice, int ordre) {
 	if(ordre == 1) {
 
 		*indice = chercherValeur(*indice);
-		encodageValeur(indice+1);
+		encodageValeur(*indice+1);
 		for(int i=10; i>5; i--) {
 			commandeBinaire[i] = valeurBinaire[i-6];
 		}
 	}else if(ordre == 0) {
 
 		for(int i=10; i>5; i--) {
-		commandeBinaire[i] = '0';
+			commandeBinaire[i] = '0';
+		}
+	}else {
+
+		printf("\nErreur de la fonction <encodageInstructionValeur>");
+	}
+}
+
+void encodageInstructionRegistre(int *indice1,int indice2, int ordre) {
+
+	if(ordre == 1) {
+
+		*indice1 = chercherRegistre(*indice1);
+		adresseRegistre(*indice1+1);
+		for(int i=indice2; i>indice2-5; i--) {
+			commandeBinaire[i] = registreBinaire[i-(indice2-4)];
+		}
+	}else if(ordre == 0) {
+
+		for(int i=indice2; i>indice2-5; i--) {
+			commandeBinaire[i] = '0';
 		}
 	}else {
 
 		printf("\nErreur de la fonction <encodageInstructionRegistre>");
-	}
+	}		
 }
 
 void encodageValeur(int indice) {
