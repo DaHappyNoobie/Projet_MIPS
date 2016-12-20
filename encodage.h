@@ -6,7 +6,7 @@ void decodageInstruction();
 void encodageInstructionR( char[], char[], char[]);
 void encodageInstructionI(char opcode[],  char operandes[]);
 void encodageInstructionJ();
-void encodageInstructionValeur(int *indice, int ordre);
+void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre);
 void encodageInstructionRegistre(int *indice,int indice2, int ordre);
 void encodageValeur(int indice);
 void encodageImmediat(int indice);

@@ -202,9 +202,9 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 
 	/* Sa */
 	if (operandes[3] == '1') {
-		encodageInstructionValeur(&indice,1);
+		encodageInstructionValeur( &indice, 10, 5, 1);
 	} else {
-		encodageInstructionValeur(&indice,0);
+		encodageInstructionValeur( &indice, 10, 5, 0);
 	}	
 
 	/* Rt */
@@ -251,41 +251,23 @@ void encodageInstructionI(char opcode[],  char operandes[]) {
 
 	/* immediate */
 	if (operandes[2] == '1') {
-		indice = chercherValeur(indice);
-		encodageImmediat(indice+1);
-		for(int i=15; i>-1; i--) {
-			printf(" %c", immediatBinaire[i] );
-			commandeBinaire[i] = immediatBinaire[i];
-		}		
+		encodageInstructionValeur( &indice, 15, 16, 1);
 	} else {
-		for(int i=15; i>-1; i--) {
-			commandeBinaire[i] = '0';
-		}
+		encodageInstructionValeur( &indice, 15, 16, 0);
 	}	
+
+	/* Rs */
+	if (operandes[0] == '1') {
+		encodageInstructionRegistre(&indice,25,1);
+	} else {
+		encodageInstructionRegistre(&indice,25,0);
+	}
 
 	/* Rt */
 	if (operandes[1] == '1') {
-		indice = chercherRegistre(indice);
-		adresseRegistre(indice+1);
-		for(int i=20; i>15; i--) {
-			commandeBinaire[i] = registreBinaire[i-16];
-		}
+		encodageInstructionRegistre(&indice,20,1);
 	}else {
-		for(int i=20; i>15; i--) {
-			commandeBinaire[i] = '0';
-		}
-	}
-	/* Rs */
-	if (operandes[0] == '1') {
-		indice = chercherRegistre(indice);
-		adresseRegistre(indice+1);
-		for(int i=25; i>20; i--) {
-			commandeBinaire[i] = registreBinaire[i-21];
-		}
-	} else {
-		for(int i=25; i>20; i--) {
-			commandeBinaire[i] = '0';
-		}		
+		encodageInstructionRegistre(&indice,20,0);
 	}
 }
 
@@ -293,14 +275,24 @@ void encodageInstructionJ() {
 	printf("\nJ");
 }
 
-void encodageInstructionValeur(int *indice, int ordre) {
+void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre) {
 	if(ordre == 1) {
-
-		*indice = chercherValeur(*indice);
-		encodageValeur(*indice+1);
-		for(int i=10; i>5; i--) {
-			commandeBinaire[i] = valeurBinaire[i-6];
+		if(taille == 5) {
+			*indice1 = chercherValeur(*indice1);
+			encodageValeur(*indice1+1);
+			for(int i=indice2; i>indice2-taille; i--) {
+				commandeBinaire[i] = valeurBinaire[i-(indice2-4)];
+			}			
+		}else if(taille == 16) {
+			*indice1 = chercherValeur(*indice1);
+			encodageImmediat(*indice1+1);
+			for(int i=indice2; i>indice2-taille; i--) {
+				commandeBinaire[i] = immediatBinaire[i-(indice2-15)];
+			}				
+		}else {
+			printf("\nErreur de la fonction <encodageInstructionValeur> : taille");
 		}
+
 	}else if(ordre == 0) {
 
 		for(int i=10; i>5; i--) {
@@ -308,7 +300,7 @@ void encodageInstructionValeur(int *indice, int ordre) {
 		}
 	}else {
 
-		printf("\nErreur de la fonction <encodageInstructionValeur>");
+		printf("\nErreur de la fonction <encodageInstructionValeur> : ordre");
 	}
 }
 
