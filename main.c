@@ -61,17 +61,6 @@ int main() {
 	return(0);
 }
 
-void jeFaisDoncDesTest() {
-	int blabla = 0;
-	
-	for(int i=0; i<150; i++) {
-		balbla++;
-	}
-	printf("Plop");
-	
-}
-
-
 void affichageBinaireCommande() {
 	
 	char c;
