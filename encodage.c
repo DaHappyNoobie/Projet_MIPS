@@ -116,9 +116,9 @@ void decodageInstruction() {
 				encodageInstructionR("000000","001000","1000");
 			} else { /* JAL ou J */
 				if(commande[i+1] == 'a') { /* JAL */
-					encodageInstructionJ();				
+					encodageInstructionJ("000011");				
 				} else { /* J */
-					encodageInstructionJ();					
+					encodageInstructionJ("000010");					
 				}
 			}
 
@@ -196,6 +196,7 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 	printf("\n%c",'R');
 	int indice = 30;
 
+	/* Opcode */
 	for(int i=31; i>25; i--) {
 		commandeBinaire[i] = opcode[31-i];
 	}
@@ -271,8 +272,18 @@ void encodageInstructionI(char opcode[],  char operandes[]) {
 	}
 }
 
-void encodageInstructionJ() {
-	printf("\nJ");
+void encodageInstructionJ(char opcode[]) {
+
+	printf("\n%c",'J');
+	int indice = 30;
+
+	/* Opcode */
+	for(int i=31; i>25; i--) {
+		commandeBinaire[i] = opcode[31-i];
+	}
+
+	/* Target */
+	encodageTarget(&indice);
 }
 
 void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre) {
@@ -366,6 +377,18 @@ void encodageImmediat(int indice) {
 			immediatBinaire[i] = '0';			
 		}
 	}	
+}
+
+void encodageTarget(int *indice) {
+
+	/* Cette procedure ne marche que pour un label par defaut : */
+	/* 0000 0000 0100 0000 0000 0000 0100 1000 */
+
+	for(int i=25; i>1; i--) {
+		commandeBinaire[i-2] = labelAdresse[i]; /* decalage de deux bits */
+	}
+	commandeBinaire[25] = '0';
+	commandeBinaire[24] = '0';
 }
 
 int chercherRegistre(int indice) {
