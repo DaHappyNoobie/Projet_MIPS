@@ -1,0 +1,9 @@
+ADD $t1, $t1, $v0
+
+MULT $t2, $t1
+
+MFLO $t4
+
+SLL $t4, $t4, 2
+
+SLT $t5, $t2, $t4
