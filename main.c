@@ -46,9 +46,9 @@ int main() {
 						/* convertion en hexadecimal */
 						convertCommande();
 
-						/* affichages */ 
+						/* affichages */
 						affichageBinaireCommande();
-						affichageHexaCommande(); 
+						affichageHexaCommande();
 
 						/* mise a jour de la liste de commandes */
 						insererCommande(&listeCommandes);
@@ -59,19 +59,19 @@ int main() {
 						/* convertion en hexadecimal */
 						convertCommande();
 
-						/* affichages */ 
+						/* affichages */
 						affichageLabel();
 						affichageBinaireCommande();
-						affichageHexaCommande(); 
+						affichageHexaCommande();
 
 						/* mise a jour de la liste de labels */
 						insererLabel(&listeLabels, &listeCommandes);
-						
+
 						/* mise a jour de la liste de commandes */
 						insererCommande(&listeCommandes);
 					break;
 					case 3 : /* seulement un label */
-						/* affichages */ 
+						/* affichages */
 						affichageLabel();
 
 						/* mise a jour de la liste de commandes */
@@ -79,24 +79,24 @@ int main() {
 					break;
 				}
 
-				sortieBoucle = choixInstruction();	
+				sortieBoucle = choixInstruction();
 
-			}else if(sortieBoucle == '2') { 
+			}else if(sortieBoucle == '2') {
 			/* instruction 2 : récapitulatif des commandes */
 
 				/* affichage de la liste des commandes */
 				affichageListeCommande();
-				
+
 				viderBuffer();
-				sortieBoucle = choixInstruction();	
-			}else if(sortieBoucle == '3') { 
+				sortieBoucle = choixInstruction();
+			}else if(sortieBoucle == '3') {
 			/* instruction 3 : récapitulatif des labels */
 
 				/* affichage de la liste des labels */
 				affichageListeLabel();
-				
+
 				viderBuffer();
-				sortieBoucle = choixInstruction();	
+				sortieBoucle = choixInstruction();
 
 			}else if(sortieBoucle == '4') {
 			/* instruction 3 : enregistrer cette commande */
@@ -104,9 +104,9 @@ int main() {
 				/* écriture dans les fichiers */
 				printf("\nEcriture dans le fichier : %c", ecritUCharTab(ficOutB, 'b'));
 				printf("\nEcriture dans le fichier : %c", ecritUCharTab(ficOutH, 'h'));
-			
+
 				viderBuffer();
-				sortieBoucle = choixInstruction();	
+				sortieBoucle = choixInstruction();
 			}else if(sortieBoucle == '5') {
 			/* instruction 3 : enregistrer cette commande */
 
@@ -114,34 +114,32 @@ int main() {
 				printf("\nEcriture dans les fichiers : %c", ecritListe(ficOutB, ficOutH, &listeCommandes));
 
 				viderBuffer();
-				sortieBoucle = choixInstruction();	
+				sortieBoucle = choixInstruction();
 			}
-		}		
+		}
+
 	}else if(mode == '2') {
-		while(sortieBoucle == '0') {
-			printf("/1");
+		while(sortieBoucle == '1') {
 			fichierLectureCommande(ficIn);
 			affichageStringCommande();
-
 			minusculeStringCommande();
+			if(decodageInstruction() != 4) {
+				affichageBinaireCommande();
+				convertCommande();
 
-			decodageInstruction();
-			affichageBinaireCommande();
-			convertCommande();
+				if(ecritUCharTab(ficOutB, 'b')) printf("\nEcriture B reussie.");
+				else printf("\nErreur d'ecriture B.");
 
-			if(ecritUCharTab(ficOutB, 'b')) printf("\nEcriture B reussie.");
-			else printf("\nErreur d'ecriture B.");
-			
-			convertCommande();
-			
-			if(ecritUCharTab(ficOutH, 'h')) printf("\nEcriture H reussie.");
-			else printf("\nErreur d'ecriture H.");
+				convertCommande();
 
-			do {
-				printf("\nContinuer? OUI (0) ou NON (1) > ");
+				if(ecritUCharTab(ficOutH, 'h')) printf("\nEcriture H reussie.");
+				else printf("\nErreur d'ecriture H.");
+
+				printf("\nContinuer? OUI (1) ou NON (0) > ");
 				scanf("%c",&sortieBoucle);
-			}while(sortieBoucle != '0' && sortieBoucle != '1');
-		}			
+				while(getchar() != '\n');
+			}
+		}
 	}
 
 	printf("\nAu revoir\n");
@@ -154,7 +152,7 @@ int main() {
 }
 
 char choixMode() {
-	
+
 	char c;
 
 	do {
@@ -167,13 +165,14 @@ char choixMode() {
 		printf("\n*\t> ");
 
 		scanf("%c",&c);
-	}while(c != '0' && c != '1' && c != 'q' && c != 'Q');
+		while(getchar() != '\n'); //Astuce pour vider le buffer
+	}while(c != '1' && c != '2' && c != 'q' && c != 'Q');
 
 	return c;
 }
 
 char choixInstruction() {
-	
+
 	char c;
 
 	do {
