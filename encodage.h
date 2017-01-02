@@ -1,11 +1,13 @@
-#include "consoleEtFichier.h"
+#include "simulation.h"
 
 void adresseRegistre(int);
 void adresseRegistreBinaire(int);
-void decodageInstruction();
+int decodageInstruction();
+int verificationEtiquette();
 void encodageInstructionR( char[], char[], char[]);
 void encodageInstructionI(char opcode[],  char operandes[]);
 void encodageInstructionJ();
+void encodageLabels();
 void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre);
 void encodageInstructionRegistre(int *indice,int indice2, int ordre);
 void encodageValeur(int indice);

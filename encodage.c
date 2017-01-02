@@ -4,12 +4,12 @@ void adresseRegistre(int indice) {
 
 	int adresse;
 
-	switch(commande[indice]) {
+	switch(commandeString[indice]) {
 		case 'a' : /* registres arguments de sous-routine */
-			if(commande[indice+1] == 't') {
+			if(commandeString[indice+1] == 't') {
 				adresse = 1;
 			}else {
-				adresse = commande[indice+1] - '0';
+				adresse = commandeString[indice+1] - '0';
 				adresse = adresse + 4;
 			}
 		break;
@@ -20,27 +20,27 @@ void adresseRegistre(int indice) {
 			adresse = 28;
 		break;
 		case 'k' : /* Kernel */
-			adresse = commande[indice+1] - '0';
+			adresse = commandeString[indice+1] - '0';
 			adresse = adresse + 26;
 		break;
 		case 'r' : /* Return address */
 			adresse = 31;
 		break;
 		case 's' : /* Registre temporaires, sous-routine */
-			adresse = commande[indice+1] - '0';
+			adresse = commandeString[indice+1] - '0';
 			adresse = adresse + 16;
 		break;
 		case 't' : /* Registre temporaires */
-			if(commande[indice+1] < 56) {
-				adresse = commande[indice+1] - '0';
+			if(commandeString[indice+1] < 56) {
+				adresse = commandeString[indice+1] - '0';
 				adresse = adresse + 8;
 			}else {
-				adresse = commande[indice+1] - '0';
+				adresse = commandeString[indice+1] - '0';
 				adresse = adresse + 16;
 			}
 		break;
 		case 'v' : /* Valeur retournees, sous-routine */
-			adresse = commande[indice+1] - '0';
+			adresse = commandeString[indice+1] - '0';
 			adresse = adresse + 2;
 		break;
 		case 'z' : /* Registre toujours nul */
@@ -55,7 +55,6 @@ void adresseRegistre(int indice) {
 }
 
 void adresseRegistreBinaire(int registre) {
-	printf("\n%c",commande[registre]);
 	int nbr;
 
 	for(int i=4; i>-1; i--) {
@@ -68,121 +67,167 @@ void adresseRegistreBinaire(int registre) {
 	}
 }
 
-void decodageInstruction() {
+int decodageInstruction() {
 /* Cette procedure va nous permettre de déterminer le type d'instruction (R,I,J) */
+/* return : */
+/* 1 : instruction reconnue */
+/* 2 : etiquette detecte avec instruction */
+/* 3 : etiquette detecte sans instruction */
+/* 4 : pas d'instruction */
 
 	int i = 0;
 
-	switch(commande[i]) {
-		case 'a' : /* ADD, ADDI ou AND */
+	if(verificationEtiquette()) { /* Cas où il y a une étiquette */
+		
+		printf("\nDetection d'une etiquette");
 
-			if(commande[i+3] == 'i') { /* ADDI */
-				encodageInstructionI("001000","111");
-			} else { /* ADD ou AND */
-				if(commande[i+1] == 'd') { /* ADD */
-					encodageInstructionR("000000","100000","1110");				
-				} else { /* AND */
-					encodageInstructionR("000000","100100","1110");					
+		/* encodage */
+		encodageLabels();
+
+		/* on detecte la presence d'une instruction sur la même ligne */
+		while((commandeString[i] < 44 || commandeString[i] > 122) && i<30 ) {
+			i++;
+		}
+
+		/* si il y a une instruction */
+		if(i != 30){
+			return 2;
+		}
+
+		return 3;
+
+	}else { /* Cas où il n'y a pas d'étiquette */
+	switch(commandeString[i]) {
+			case 'a' : /* ADD, ADDI ou AND */
+
+				if(commandeString[i+3] == 'i') { /* ADDI */
+					encodageInstructionI("001000","111");
+				} else { /* ADD ou AND */
+					if(commandeString[i+1] == 'd') { /* ADD */
+						encodageInstructionR("000000","100000","1110");				
+					} else { /* AND */
+						encodageInstructionR("000000","100100","1110");					
+					}
 				}
-			}
 
-		break;
-		case 'b' : /* BEQ, BNE, BGTZ ou BLEZ */
+			break;
+			case 'b' : /* BEQ, BNE, BGTZ ou BLEZ */
 
-			switch(commande[i+1]) {
-				case 'e' : /* BEQ */
-					encodageInstructionI("000100","111");
-				break;
-				case 'n' : /* BNE */
-					encodageInstructionI("000100","111");
-				break;
-				case 'g' : /* BGTZ */
-					encodageInstructionI("000111","101");
-				break;
-				case 'l' : /* BLEZ */
-					encodageInstructionI("000110","101");
-				break;
-			}
-
-		break;
-		case 'd' : /* DIV */
-
-			encodageInstructionR("000000","011010","1100");
-
-		break;
-		case 'j' : /* J, JAL ou JR */
-
-			if(commande[i+1] == 'r') { /* JR */
-				encodageInstructionR("000000","001000","1000");
-			} else { /* JAL ou J */
-				if(commande[i+1] == 'a') { /* JAL */
-					encodageInstructionJ("000011");				
-				} else { /* J */
-					encodageInstructionJ("000010");					
+				switch(commandeString[i+1]) {
+					case 'e' : /* BEQ */
+						encodageInstructionI("000100","111");
+					break;
+					case 'n' : /* BNE */
+						encodageInstructionI("000100","111");
+					break;
+					case 'g' : /* BGTZ */
+						encodageInstructionI("000111","101");
+					break;
+					case 'l' : /* BLEZ */
+						encodageInstructionI("000110","101");
+					break;
 				}
-			}
 
-		break;
-		case 'l' : /* LUI ou LW */
-			if(commande[i+1] == 'u') { /* LUI */
-				encodageInstructionI("001111","011");				
-			} else { /* LW */
-				encodageInstructionI("100011","111");					
-			}
+			break;
+			case 'd' : /* DIV */
 
-		break;
-		case 'm' : /* MULT, MFHIS ou MFLO  */
-			if(commande[i+1] == 'u') { /* MULT */
-				encodageInstructionR("000000","011000","1100");				
-			}else { /*  MFHIS ou MFLO */
-				if(commande[i+2] == 'h') { /* MFHIS */
-					encodageInstructionR("000000","010000","0010");				
-				}else { /* MFLO */
-					encodageInstructionR("000000","010010","0010");
-				}				
-			}
+				encodageInstructionR("000000","011010","1100");
 
-		break;
-		case 'o' : /* OR */
+			break;
+			case 'j' : /* J, JAL ou JR */
 
-			encodageInstructionR("000000","100101","1110");
+				if(commandeString[i+1] == 'r') { /* JR */
+					encodageInstructionR("000000","001000","1000");
+				} else { /* JAL ou J */
+					if(commandeString[i+1] == 'a') { /* JAL */
+						encodageInstructionJ("000011");				
+					} else { /* J */
+						encodageInstructionJ("000010");					
+					}
+				}
 
-		break;
-		case 'r' : /* ROTR */
+			break;
+			case 'l' : /* LUI ou LW */
+				if(commandeString[i+1] == 'u') { /* LUI */
+					encodageInstructionI("001111","011");				
+				} else { /* LW */
+					encodageInstructionI("100011","111");					
+				}
 
-			encodageInstructionR("000000","000010","2110");
+			break;
+			case 'm' : /* MULT, MFHIS ou MFLO  */
+				if(commandeString[i+1] == 'u') { /* MULT */
+					encodageInstructionR("000000","011000","1100");				
+				}else { /*  MFHIS ou MFLO */
+					if(commandeString[i+2] == 'h') { /* MFHIS */
+						encodageInstructionR("000000","010000","0010");				
+					}else { /* MFLO */
+						encodageInstructionR("000000","010010","0010");
+					}				
+				}
 
-		break;
-		case 's' : /* SUB, SLL, SRL, SLT ou SW */
+			break;
+			case 'n' : /* NOP */
 
-			if(commande[i+1] == 'w') { /* SW */
-				encodageInstructionI("101011","211");
-			} else { /* SUB, SLL, SRL ou SLT */
-				if(commande[i+1] == 'u') { /* SUB */
+				encodageInstructionR("000000","000000","0000");
+
+			break;
+			case 'o' : /* OR */
+
+				encodageInstructionR("000000","100101","1110");
+
+			break;
+			case 'r' : /* ROTR */
+
+				encodageInstructionR("000000","000010","2111");
+
+			break;
+			case 's' : /* SUB, SLL, SRL, SLT ou SW */
+
+				if(commandeString[i+1] == 'w') { /* SW */
+					encodageInstructionI("101011","211");
+				} else if(commandeString[i+1] == 'u') { /* SUB */
 					encodageInstructionR("000000","100010","1110");				
-				}else if(commande[i+1] == 'r'){ /*  SRL */
+				}else if(commandeString[i+1] == 'r'){ /*  SRL */
 					encodageInstructionR("000000","000010","1110");					
-				}else {
-					if(commande[i+2] == 'l') { /* SLL */
-						encodageInstructionR("000000","000000","0111");				
+				}else if(commandeString[i+1] == 'y') { /*  SYSCALL */
+					encodageInstructionR("000000","001100","0000");	
+				}else { /* SLL ou SLT */
+					if(commandeString[i+2] == 'l') { /* SLL */
+						encodageInstructionR("000000","000000","3111");				
 					}else { /* SLT */
 						encodageInstructionR("000000","101010","1110");
 					}				
 				}
-			}
 
-		break;
-		case 'x' : /* XOR */
+			break;
+			case 'x' : /* XOR */
 
-			encodageInstructionR("000000","100110","1110");
+				encodageInstructionR("000000","100110","1110");
 
-		break;
-		default :
+			break;
+			default :
 
-			printf("\nPas d'instruction reconnue");
+				printf("\nPas d'instruction reconnue");
+				return 4;
 
-		break;
+			break;
+		}	
+
+		return 1;	
 	}
+	
+}
+
+int verificationEtiquette() {
+	
+	for(int i=0; i<30; i++) {
+		if(commandeString[i] == ':'){
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
@@ -191,9 +236,10 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 	/* operande (4 char) represante rs, rt, rd et sa : */
 	/* 1 : si plein */
 	/* 0 : si vide */
-	/* 2 : cas pour le ROTR */
+	/* 2 : cas pour le ROTR (R) */
+	/* 3 : cas pour le SLL (R) */
+	/* cela permet de différencier les deux instructions */
 
-	printf("\n%c",'R');
 	int indice = 30;
 
 	/* Opcode */
@@ -218,6 +264,11 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 	/* Rs */
 	if (operandes[0] == '1') {
 		encodageInstructionRegistre(&indice,25,1);
+	}else if(operandes[0] == '2') {
+		for(int i=25; i>21; i--) {
+			commandeBinaire[i] = '0';
+		}
+		commandeBinaire[21] = '1';
 	} else {
 		encodageInstructionRegistre(&indice,25,0);
 	}
@@ -241,8 +292,6 @@ void encodageInstructionI(char opcode[],  char operandes[]) {
 	/* 1 : si plein */
 	/* 0 : si vide */
 	/* 2 : cas du SW */
-
-	printf("\n%c",'I');
 
 	int indice = 30;
 
@@ -274,7 +323,6 @@ void encodageInstructionI(char opcode[],  char operandes[]) {
 
 void encodageInstructionJ(char opcode[]) {
 
-	printf("\n%c",'J');
 	int indice = 30;
 
 	/* Opcode */
@@ -284,6 +332,33 @@ void encodageInstructionJ(char opcode[]) {
 
 	/* Target */
 	encodageTarget(&indice);
+}
+
+void encodageLabels() {
+/* cette procédure va récuperer le nom du nouveau label */
+	int i, decalage;
+	i=0;
+
+	while(commandeString[i] == ' ') {
+		i++;
+	}
+
+	while(commandeString[i] != ':') {
+		labelNom[i] = commandeString[i];
+		i++;
+	}
+
+	labelNom[i] = '\0';
+
+	while(commandeString[i] == ':' || commandeString[i] == ' ') {
+		i++;
+	}
+
+	decalage = i;
+	do{
+		commandeString[i-decalage] = commandeString[i];
+		i++;
+	}while(i<29);
 }
 
 void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre) {
@@ -343,9 +418,9 @@ void encodageValeur(int indice) {
 
 	do {
 		valeur = valeur * 10;
-		valeur += commande[i+indice] - '0';
+		valeur += commandeString[i+indice] - '0';
 		i++;
-	}while(commande[indice+i] >= 48 && commande[indice+i] <= 57);
+	}while(commandeString[indice+i] >= 48 && commandeString[indice+i] <= 57);
 
 	for(int i=4; i>-1; i--) {
 		nbr = valeur >> i;
@@ -365,9 +440,9 @@ void encodageImmediat(int indice) {
 
 	do {
 		valeur = valeur * 10;
-		valeur += commande[i+indice] - '0';
+		valeur += commandeString[i+indice] - '0';
 		i++;
-	}while(commande[indice+i] >= 48 && commande[indice+i] <= 57);
+	}while(commandeString[indice+i] >= 48 && commandeString[indice+i] <= 57);
 
 	for(int i=15; i>-1; i--) {
 		nbr = valeur >> i;
@@ -384,9 +459,9 @@ void encodageTarget(int *indice) {
 	/* Cette procedure ne marche que pour un label par defaut : */
 	/* 0000 0000 0100 0000 0000 0000 0100 1000 */
 
-	for(int i=25; i>1; i--) {
+	/*for(int i=25; i>1; i--) {
 		commandeBinaire[i-2] = labelAdresse[i]; /* decalage de deux bits */
-	}
+	/*}*/
 	commandeBinaire[25] = '0';
 	commandeBinaire[24] = '0';
 }
@@ -397,7 +472,7 @@ int chercherRegistre(int indice) {
 
 	do {
 		i--;
-	}while(commande[i] != '$');
+	}while(commandeString[i] != '$');
 
 	return i;
 }
@@ -409,7 +484,7 @@ int chercherValeur(int indice) {
 
 	do {
 		i--;
-		if(commande[i] >= 48 && commande[i] <= 57) {
+		if(commandeString[i] >= 48 && commandeString[i] <= 57) {
 			trouve = '1';
 		}else if(trouve == '1') {
 			trouve = '2';
@@ -433,7 +508,6 @@ void convertCommande() {
 		if (k>=4) {
 			commandeHexa[y] = buff;
 			k=0;
-			printf("%d %d %d %d\n",buff, commandeHexa[y],y,i);
 			buff=0;
 			y++;
 		}
@@ -442,10 +516,9 @@ void convertCommande() {
 
 		commandeHexa[h]=symboles[commandeHexa[h]];
 	}
-	for(int i=0; i<4; i++) {
+	/*for(int i=0; i<4; i++) {
 		tampon = commandeHexa[i];
 		commandeHexa[i] = commandeHexa[7-i];
 		commandeHexa[7-i] = tampon;
-	}
-	printf("\n\n%s\n",commandeHexa);
+	}*/
 }
