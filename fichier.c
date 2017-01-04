@@ -1,6 +1,10 @@
 #include "fichier.h"
 
 void consoleLectureCommande() {
+	
+	for(int i=0; i<30;i++){
+		commandeString[i] = 32;
+	}
 
 	viderBuffer();
 
@@ -26,7 +30,6 @@ int fichierLectureCommande(FILE * fichier) {
 		printf("\nFin du fichier.\n");
 		return 0;
 	}
-
 }
 
 char ecritUCharTab(FILE * fichier, char type) {
@@ -47,7 +50,6 @@ char ecritUCharTab(FILE * fichier, char type) {
 		fprintf(fichier,"%c", commandeHexa[i]);
 
 		}
-
 	}
 	else printf("\nMauvais type.\n");
 	return '1';
@@ -75,10 +77,10 @@ char ecritListe(FILE * fichierB, FILE * fichierH, listeCommande *l) {
 }
 
 void viderBuffer() { /* Cette fonction nous permet d'etre sur que le buffer est vide. */
-
+  
    	char c;
 
-    do {
-        c = getchar();
-    } while (c != '\n' && c != EOF);
+    do { 
+        c = getchar(); 
+    } while (c != '\n' && c != EOF); 
 }

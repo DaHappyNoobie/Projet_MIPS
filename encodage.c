@@ -62,7 +62,7 @@ void adresseRegistreBinaire(int registre) {
 		if( nbr & 1 ){
 			registreBinaire[i] = '1';
 		}else {
-			registreBinaire[i] = '0';
+			registreBinaire[i] = '0';			
 		}
 	}
 }
@@ -85,7 +85,7 @@ int decodageInstruction() {
 		encodageLabels();
 
 		/* on detecte la presence d'une instruction sur la même ligne */
-		while((commandeString[i] < 44 || commandeString[i] > 122) && i<30 ) {
+		while((commandeString[i] < 36 || commandeString[i] > 122) && i<30 ) {
 			i++;
 		}
 
@@ -104,9 +104,10 @@ int decodageInstruction() {
 					encodageInstructionI("001000","111");
 				} else { /* ADD ou AND */
 					if(commandeString[i+1] == 'd') { /* ADD */
-						encodageInstructionR("000000","100000","1110");
+						encodageInstructionR("000000","100000","1110");				
 					} else { /* AND */
-						encodageInstructionR("000000","100100","1110");
+						encodageInstructionR("000000","100100","1110");					
+
 					}
 				}
 
@@ -140,30 +141,30 @@ int decodageInstruction() {
 					encodageInstructionR("000000","001000","1000");
 				} else { /* JAL ou J */
 					if(commandeString[i+1] == 'a') { /* JAL */
-						encodageInstructionJ("000011");
+						encodageInstructionJ("000011");				
 					} else { /* J */
-						encodageInstructionJ("000010");
+						encodageInstructionJ("000010");					
 					}
 				}
 
 			break;
 			case 'l' : /* LUI ou LW */
 				if(commandeString[i+1] == 'u') { /* LUI */
-					encodageInstructionI("001111","011");
+					encodageInstructionI("001111","011");				
 				} else { /* LW */
-					encodageInstructionI("100011","111");
+					encodageInstructionI("100011","111");					
 				}
 
 			break;
 			case 'm' : /* MULT, MFHIS ou MFLO  */
 				if(commandeString[i+1] == 'u') { /* MULT */
-					encodageInstructionR("000000","011000","1100");
+					encodageInstructionR("000000","011000","1100");				
 				}else { /*  MFHIS ou MFLO */
 					if(commandeString[i+2] == 'h') { /* MFHIS */
-						encodageInstructionR("000000","010000","0010");
+						encodageInstructionR("000000","010000","0010");				
 					}else { /* MFLO */
 						encodageInstructionR("000000","010010","0010");
-					}
+					}				
 				}
 
 			break;
@@ -187,17 +188,17 @@ int decodageInstruction() {
 				if(commandeString[i+1] == 'w') { /* SW */
 					encodageInstructionI("101011","211");
 				} else if(commandeString[i+1] == 'u') { /* SUB */
-					encodageInstructionR("000000","100010","1110");
+					encodageInstructionR("000000","100010","1110");				
 				}else if(commandeString[i+1] == 'r'){ /*  SRL */
-					encodageInstructionR("000000","000010","1110");
+					encodageInstructionR("000000","000010","1110");					
 				}else if(commandeString[i+1] == 'y') { /*  SYSCALL */
-					encodageInstructionR("000000","001100","0000");
+					encodageInstructionR("000000","001100","0000");	
 				}else { /* SLL ou SLT */
 					if(commandeString[i+2] == 'l') { /* SLL */
-						encodageInstructionR("000000","000000","3111");
+						encodageInstructionR("000000","000000","3111");				
 					}else { /* SLT */
 						encodageInstructionR("000000","101010","1110");
-					}
+					}				
 				}
 
 			break;
@@ -208,19 +209,19 @@ int decodageInstruction() {
 			break;
 			default :
 
-				printf("Pas d'instruction reconnue\n");
+				printf("\nPas d'instruction reconnue");
 				return 4;
 
 			break;
-		}
+		}	
 
-		return 1;
+		return 1;	
 	}
-
+	
 }
 
 int verificationEtiquette() {
-
+	
 	for(int i=0; i<30; i++) {
 		if(commandeString[i] == ':'){
 			return 1;
@@ -252,7 +253,8 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 		encodageInstructionValeur( &indice, 10, 5, 1);
 	} else {
 		encodageInstructionValeur( &indice, 10, 5, 0);
-	}
+	}	
+
 
 	/* Rt */
 	if (operandes[1] == '1') {
@@ -278,12 +280,14 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 		encodageInstructionRegistre(&indice,15,1);
 	} else {
 		encodageInstructionRegistre(&indice,15,0);
-	}
+	}		
+
 
 	/* Function */
 	for(int i=5; i>-1; i--) {
 		commandeBinaire[i] = function[5-i];
-	}
+
+	}	
 }
 
 void encodageInstructionI(char opcode[],  char operandes[]) {
@@ -304,7 +308,7 @@ void encodageInstructionI(char opcode[],  char operandes[]) {
 		encodageInstructionValeur( &indice, 15, 16, 1);
 	} else {
 		encodageInstructionValeur( &indice, 15, 16, 0);
-	}
+	}	
 
 	/* Rs */
 	if (operandes[0] == '1') {
@@ -368,13 +372,14 @@ void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre)
 			encodageValeur(*indice1+1);
 			for(int i=indice2; i>indice2-taille; i--) {
 				commandeBinaire[i] = valeurBinaire[i-(indice2-4)];
-			}
+			}			
 		}else if(taille == 16) {
 			*indice1 = chercherValeur(*indice1);
 			encodageImmediat(*indice1+1);
 			for(int i=indice2; i>indice2-taille; i--) {
 				commandeBinaire[i] = immediatBinaire[i-(indice2-15)];
-			}
+			}				
+
 		}else {
 			printf("\nErreur de la fonction <encodageInstructionValeur> : taille");
 		}
@@ -407,7 +412,7 @@ void encodageInstructionRegistre(int *indice1,int indice2, int ordre) {
 	}else {
 
 		printf("\nErreur de la fonction <encodageInstructionRegistre>");
-	}
+	}		
 }
 
 void encodageValeur(int indice) {
@@ -427,9 +432,9 @@ void encodageValeur(int indice) {
 		if( nbr & 1 ){
 			valeurBinaire[i] = '1';
 		}else {
-			valeurBinaire[i] = '0';
+			valeurBinaire[i] = '0';			
 		}
-	}
+	}	
 }
 
 void encodageImmediat(int indice) {
@@ -449,9 +454,9 @@ void encodageImmediat(int indice) {
 		if( nbr & 1 ){
 			immediatBinaire[i] = '1';
 		}else {
-			immediatBinaire[i] = '0';
+			immediatBinaire[i] = '0';			
 		}
-	}
+	}	
 }
 
 void encodageTarget(int *indice) {
@@ -501,8 +506,8 @@ void convertCommande() {
 	char symboles[] = "0123456789ABCDEF";
 	char tampon;
 
-	for (int i=0;i<32;i++) {
-
+	for (int i=0;i<32;i++) {	    
+		
 		buff = buff | ((commandeBinaire[4*y+(k)]-48)<<k);
 		k++;
 		if (k>=4) {

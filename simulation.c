@@ -71,7 +71,7 @@ void creationAdresseInstruction(listeCommande *cou, listeCommande *nouv, int ind
 
 			creationAdresseInstruction(&courant, &nouveau, indice-1);
 
-			*nouv = nouveau;
+			*nouv = nouveau; 
 
 		}else {
 
@@ -90,20 +90,19 @@ void creationAdresseInstruction(listeCommande *cou, listeCommande *nouv, int ind
 
 			while(indice >= 0) {
 				nouveau->adresse[indice] = courant->adresse[indice];
-				indice--;
+				indice--;			
 			}
 
-			*nouv = nouveau;
+			*nouv = nouveau; 
 
-		}
+		}		
 	}else {
 		if(courant->adresse[indice] == 'f') {
 			nouveau->adresse[indice] = '0';
 
 			creationAdresseInstruction(&courant, &nouveau, indice-1);
-
-			*nouv = nouveau;
-
+      
+			*nouv = nouveau; 
 		}else {
 
 			if( (courant->adresse[indice] >= 48 && courant->adresse[indice] <= 56) || (courant->adresse[indice] >= 97 && courant->adresse[indice] <= 101)) {
@@ -138,19 +137,19 @@ void insererLabel(listeLabel *l, listeCommande *ll) {
 	courantI = *ll;
 	courant = *l;
 
-	printf("\n1");
 	/* Détermination de la fin de la liste des instruction (pour l'adresse) */
 	while ( courantI != NULL && courantI->suivant != NULL ){
 		courantI = courantI->suivant;
 	}
-	printf("\n2");
+
 	/* Détermination de la fin de la liste des labels */
 	while (courant != NULL && courant->suivant != NULL ){
 		courant = courant->suivant;
 	}
-	printf("\n3");
+	
 	/*Insertion*/
 	nouveau = labelNouveau();
+
 	if (courantI == NULL) {
 		nouveau->adresse[0] = '0';
 		nouveau->adresse[1] = '0';
@@ -160,22 +159,21 @@ void insererLabel(listeLabel *l, listeCommande *ll) {
 		nouveau->adresse[5] = '0';
 		nouveau->adresse[6] = '0';
 		nouveau->adresse[7] = '0';
-			printf("\n4");
 	}else{
-		creationAdresseLabel(&courantI, &courant, 7);
-			printf("\n5");
+		creationAdresseLabel(&courantI, &nouveau, 7);
+
 	}
-	printf("\n6");
+
 	for(int i=0; i<10; i++) {
 		nouveau->nom[i] = labelNom[i];
 	}
-	printf("\n7");
+
 	if(courant == NULL) {
 		*l = nouveau;
 	}else{
 		courant->suivant = nouveau;
 	}
-	printf("\n8");
+
 	nouveau->suivant = NULL;
 }
 
@@ -198,18 +196,19 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 	nouveau = *nouv;
 
 	if(indice == 7) {
+
 		if(courant->adresse[indice] == 'c') {
 			nouveau->adresse[indice] = '0';
 
 			creationAdresseLabel(&courant, &nouveau, indice-1);
 
-			*nouv = nouveau;
+			*nouv = nouveau; 
+
 
 		}else {
 
 			if(courant->adresse[indice] == '0') {
 				nouveau->adresse[indice] = '4';
-
 			}else if(courant->adresse[indice] == '4') {
 				nouveau->adresse[indice] = '8';
 			}else if(courant->adresse[indice] == '8') {
@@ -222,12 +221,12 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 
 			while(indice >= 0) {
 				nouveau->adresse[indice] = courant->adresse[indice];
-				indice--;
+				indice--;			
 			}
 
-			*nouv = nouveau;
+			*nouv = nouveau; 
 
-		}
+		}		
 	}else {
 		if(courant->adresse[indice] == 'f') {
 			nouveau->adresse[indice] = '0';
@@ -235,7 +234,6 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 			creationAdresseLabel(&courant, &nouveau, indice-1);
 
 			*nouv = nouveau;
-
 		}else {
 
 			if( (courant->adresse[indice] >= 48 && courant->adresse[indice] <= 56) || (courant->adresse[indice] >= 97 && courant->adresse[indice] <= 101)) {
@@ -251,12 +249,12 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 
 			while(indice >= 0) {
 				nouveau->adresse[indice] = courant->adresse[indice];
-				indice--;
+				indice--;			
 			}
 
-			*nouv = nouveau;
+			*nouv = nouveau; 
 
-		}
+		}		
 	}
 }
 /* ******************************************************************** */
@@ -267,7 +265,7 @@ void affichageStringCommande() {
 	int i=0;
 	char c;
 
-	printf("\n\n");
+	printf("\n");
 
 	c = commandeString[i];
 
@@ -277,4 +275,5 @@ void affichageStringCommande() {
 		c = commandeString[i];
 
 	}while(c != '\n' && c!= '\0' && c != EOF);
+
 }
