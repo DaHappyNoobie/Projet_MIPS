@@ -78,7 +78,7 @@ int decodageInstruction() {
 	int i = 0;
 
 	if(verificationEtiquette()) { /* Cas où il y a une étiquette */
-		
+
 		printf("\nDetection d'une etiquette");
 
 		/* encodage */
@@ -107,6 +107,7 @@ int decodageInstruction() {
 						encodageInstructionR("000000","100000","1110");				
 					} else { /* AND */
 						encodageInstructionR("000000","100100","1110");					
+
 					}
 				}
 
@@ -254,6 +255,7 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 		encodageInstructionValeur( &indice, 10, 5, 0);
 	}	
 
+
 	/* Rt */
 	if (operandes[1] == '1') {
 		encodageInstructionRegistre(&indice,20,1);
@@ -280,9 +282,11 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[]) {
 		encodageInstructionRegistre(&indice,15,0);
 	}		
 
+
 	/* Function */
 	for(int i=5; i>-1; i--) {
 		commandeBinaire[i] = function[5-i];
+
 	}	
 }
 
@@ -375,6 +379,7 @@ void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre)
 			for(int i=indice2; i>indice2-taille; i--) {
 				commandeBinaire[i] = immediatBinaire[i-(indice2-15)];
 			}				
+
 		}else {
 			printf("\nErreur de la fonction <encodageInstructionValeur> : taille");
 		}
@@ -467,7 +472,7 @@ void encodageTarget(int *indice) {
 }
 
 int chercherRegistre(int indice) {
-	
+
 	int i = indice;
 
 	do {
@@ -478,7 +483,7 @@ int chercherRegistre(int indice) {
 }
 
 int chercherValeur(int indice) {
-	
+
 	int i = indice;
 	char trouve = '0';
 

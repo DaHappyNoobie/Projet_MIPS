@@ -101,9 +101,8 @@ void creationAdresseInstruction(listeCommande *cou, listeCommande *nouv, int ind
 			nouveau->adresse[indice] = '0';
 
 			creationAdresseInstruction(&courant, &nouveau, indice-1);
-
+      
 			*nouv = nouveau; 
-
 		}else {
 
 			if( (courant->adresse[indice] >= 48 && courant->adresse[indice] <= 56) || (courant->adresse[indice] >= 97 && courant->adresse[indice] <= 101)) {
@@ -119,12 +118,12 @@ void creationAdresseInstruction(listeCommande *cou, listeCommande *nouv, int ind
 
 			while(indice >= 0) {
 				nouveau->adresse[indice] = courant->adresse[indice];
-				indice--;			
+				indice--;
 			}
 
-			*nouv = nouveau; 
+			*nouv = nouveau;
 
-		}		
+		}
 	}
 }
 
@@ -137,7 +136,6 @@ void insererLabel(listeLabel *l, listeCommande *ll) {
 
 	courantI = *ll;
 	courant = *l;
-	
 
 	/* Détermination de la fin de la liste des instruction (pour l'adresse) */
 	while ( courantI != NULL && courantI->suivant != NULL ){
@@ -161,7 +159,6 @@ void insererLabel(listeLabel *l, listeCommande *ll) {
 		nouveau->adresse[5] = '0';
 		nouveau->adresse[6] = '0';
 		nouveau->adresse[7] = '0';
-
 	}else{
 		creationAdresseLabel(&courantI, &nouveau, 7);
 
@@ -198,7 +195,6 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 	courant = *cou;
 	nouveau = *nouv;
 
-
 	if(indice == 7) {
 
 		if(courant->adresse[indice] == 'c') {
@@ -208,12 +204,11 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 
 			*nouv = nouveau; 
 
+
 		}else {
 
 			if(courant->adresse[indice] == '0') {
-
 				nouveau->adresse[indice] = '4';
-
 			}else if(courant->adresse[indice] == '4') {
 				nouveau->adresse[indice] = '8';
 			}else if(courant->adresse[indice] == '8') {
@@ -238,8 +233,7 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 
 			creationAdresseLabel(&courant, &nouveau, indice-1);
 
-			*nouv = nouveau; 
-
+			*nouv = nouveau;
 		}else {
 
 			if( (courant->adresse[indice] >= 48 && courant->adresse[indice] <= 56) || (courant->adresse[indice] >= 97 && courant->adresse[indice] <= 101)) {
@@ -281,4 +275,5 @@ void affichageStringCommande() {
 		c = commandeString[i];
 
 	}while(c != '\n' && c!= '\0' && c != EOF);
+
 }
