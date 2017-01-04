@@ -1,21 +1,14 @@
 #include "affichageConsole.h"
 
 char choixMode();
-char choixInstruction();
+char choixInstruction1();
+char choixInstruction2();
 
 int main() {
 
 	char sortieBoucle = '1';
 	char mode = 's';
 	int etat = -1;
-
-	mode = choixMode();
-
-	/* si l'utilisateur quitte */
-	if(mode == 'q' || mode == 'Q') {
-		printf("\nAu revoir\n");
-		return 0;
-	}
 
 	/* on efface les fichiers de sorties */
 	remove("fichierSortieBinaire.txt");
@@ -26,123 +19,192 @@ int main() {
 	FILE * ficOutH = fopen("fichierSortieHexa.txt", "a");
 	FILE * ficIn = fopen("fichierEntree.txt", "r");
 
-	if(mode == '1') {
-	/* mode 1 : commande par commande */
+	/* menu principal, celui avec le choix des modes */
+	do {
 
-		while(sortieBoucle != 'q' && sortieBoucle != 'Q') {
+		mode = choixMode();
 
-			if(sortieBoucle == '1') {
-			/* instruction 1 : entrer une commandes */
+		if(mode == '1') {
+		/* mode 1 : commande par commande */
 
-				/* traitement de la commande en entree */
-				consoleLectureCommande();
-				minusculeStringCommande();
-				printf("\n%c",commandeString[28]);
-				/* décodage */
-				etat = decodageInstruction();
+			while(sortieBoucle != 'q' && sortieBoucle != 'Q') {
 
-				switch(etat) {
-					case 1 : /* seulement une instruction */
-						/* convertion en hexadecimal */
-						convertCommande();
+				if(sortieBoucle == '1') {
+				/* instruction 1 : entrer une commandes */
 
-						/* affichages */ 
-						affichageBinaireCommande();
-						affichageHexaCommande(); 
+					/* traitement de la commande en entree */
+					consoleLectureCommande();
+					minusculeStringCommande();
+					printf("\n%c",commandeString[28]);
+					/* décodage */
+					etat = decodageInstruction();
 
-						/* mise a jour de la liste de commandes */
-						insererCommande(&listeCommandes);
-					break;
-					case 2 : /* un label et une instruction */
-						etat = decodageInstruction();
+					switch(etat) {
+						case 1 : /* seulement une instruction */
+							/* convertion en hexadecimal */
+							convertCommande();
 
-						/* convertion en hexadecimal */
-						convertCommande();
+							/* affichages */ 
+							affichageBinaireCommande();
+							affichageHexaCommande(); 
 
-						/* affichages */ 
-						affichageLabel();
-						affichageBinaireCommande();
-						affichageHexaCommande(); 
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes);
+						break;
+						case 2 : /* un label et une instruction */
+							etat = decodageInstruction();
 
-						/* mise a jour de la liste de labels */
-						insererLabel(&listeLabels, &listeCommandes);
-						
-						/* mise a jour de la liste de commandes */
-						insererCommande(&listeCommandes);
-					break;
-					case 3 : /* seulement un label */
-						/* affichages */ 
-						affichageLabel();
+							/* convertion en hexadecimal */
+							convertCommande();
 
-						/* mise a jour de la liste de commandes */
-						insererLabel(&listeLabels, &listeCommandes);
-					break;
+							/* affichages */ 
+							affichageLabel();
+							affichageBinaireCommande();
+							affichageHexaCommande(); 
+
+							/* mise a jour de la liste de labels */
+							insererLabel(&listeLabels, &listeCommandes);
+							
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes);
+						break;
+						case 3 : /* seulement un label */
+							/* affichages */ 
+							affichageLabel();
+
+							/* mise a jour de la liste de commandes */
+							insererLabel(&listeLabels, &listeCommandes);
+						break;
+					}
+
+					sortieBoucle = choixInstruction1();	
+
+				}else if(sortieBoucle == '2') { 
+				/* instruction 2 : récapitulatif des commandes */
+
+					/* affichage de la liste des commandes */
+					affichageListeCommande();
+					
+					viderBuffer();
+					sortieBoucle = choixInstruction1();	
+				}else if(sortieBoucle == '3') { 
+				/* instruction 3 : récapitulatif des labels */
+
+					/* affichage de la liste des labels */
+					affichageListeLabel();
+					
+					viderBuffer();
+					sortieBoucle = choixInstruction1();	
+
+				}else if(sortieBoucle == '4') {
+				/* instruction 3 : enregistrer cette commande */
+
+					/* écriture dans les fichiers */
+					printf("\nEcriture dans le fichier : %c", ecritUCharTab(ficOutB, 'b'));
+					printf("\nEcriture dans le fichier : %c", ecritUCharTab(ficOutH, 'h'));
+				
+					viderBuffer();
+					sortieBoucle = choixInstruction1();	
+				}else if(sortieBoucle == '5') {
+				/* instruction 3 : enregistrer cette commande */
+
+					/* écriture dans les fichiers */
+					printf("\nEcriture dans les fichiers : %c", ecritListe(ficOutB, ficOutH, &listeCommandes));
+
+					viderBuffer();
+					sortieBoucle = choixInstruction1();	
 				}
+			}		
+		}else if(mode == '2') {
 
-				sortieBoucle = choixInstruction();	
+			viderBuffer();
+			sortieBoucle = choixInstruction2();
 
-			}else if(sortieBoucle == '2') { 
-			/* instruction 2 : récapitulatif des commandes */
+			while(sortieBoucle != 'q' && sortieBoucle != 'Q') {
 
-				/* affichage de la liste des commandes */
-				affichageListeCommande();
-				
-				viderBuffer();
-				sortieBoucle = choixInstruction();	
-			}else if(sortieBoucle == '3') { 
-			/* instruction 3 : récapitulatif des labels */
+				if(sortieBoucle == '1') {
+				/* instruction 1 : étape par étape */
 
-				/* affichage de la liste des labels */
-				affichageListeLabel();
-				
-				viderBuffer();
-				sortieBoucle = choixInstruction();	
+					fichierLectureCommande(ficIn);
+					affichageStringCommande();
+					minusculeStringCommande();
+					
+					etat = decodageInstruction();
 
-			}else if(sortieBoucle == '4') {
-			/* instruction 3 : enregistrer cette commande */
+					switch(etat) {
+						case 1 : /* seulement une instruction */
+							/* convertion en hexadecimal */
+							convertCommande();
 
-				/* écriture dans les fichiers */
-				printf("\nEcriture dans le fichier : %c", ecritUCharTab(ficOutB, 'b'));
-				printf("\nEcriture dans le fichier : %c", ecritUCharTab(ficOutH, 'h'));
-			
-				viderBuffer();
-				sortieBoucle = choixInstruction();	
-			}else if(sortieBoucle == '5') {
-			/* instruction 3 : enregistrer cette commande */
+							/* affichages */ 
+							affichageBinaireCommande();
+							affichageHexaCommande(); 
 
-				/* écriture dans les fichiers */
-				printf("\nEcriture dans les fichiers : %c", ecritListe(ficOutB, ficOutH, &listeCommandes));
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes);
 
-				viderBuffer();
-				sortieBoucle = choixInstruction();	
-			}
-		}		
-	}else if(mode == '2') {
-		while(sortieBoucle == '0') {
-			printf("/1");
-			fichierLectureCommande(ficIn);
-			affichageStringCommande();
+							if(ecritUCharTab(ficOutB, 'b')) printf("\nEcriture B reussie.");
+							else printf("\nErreur d'ecriture B.");
 
-			minusculeStringCommande();
+							if(ecritUCharTab(ficOutH, 'h')) printf("\nEcriture H reussie.");
+							else printf("\nErreur d'ecriture H.");
+						break;
+						case 2 : /* un label et une instruction */
+							etat = decodageInstruction();
 
-			decodageInstruction();
-			affichageBinaireCommande();
-			convertCommande();
+							/* convertion en hexadecimal */
+							convertCommande();
 
-			if(ecritUCharTab(ficOutB, 'b')) printf("\nEcriture B reussie.");
-			else printf("\nErreur d'ecriture B.");
-			
-			convertCommande();
-			
-			if(ecritUCharTab(ficOutH, 'h')) printf("\nEcriture H reussie.");
-			else printf("\nErreur d'ecriture H.");
+							/* affichages */ 
+							affichageLabel();
+							affichageBinaireCommande();
+							affichageHexaCommande(); 
 
-			do {
-				printf("\nContinuer? OUI (0) ou NON (1) > ");
-				scanf("%c",&sortieBoucle);
-			}while(sortieBoucle != '0' && sortieBoucle != '1');
-		}			
-	}
+							/* mise a jour de la liste de labels */
+							insererLabel(&listeLabels, &listeCommandes);
+							
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes);
+
+							if(ecritUCharTab(ficOutB, 'b')) printf("\nEcriture B reussie.");
+							else printf("\nErreur d'ecriture B.");
+
+							if(ecritUCharTab(ficOutH, 'h')) printf("\nEcriture H reussie.");
+							else printf("\nErreur d'ecriture H.");
+						break;
+						case 3 : /* seulement un label */
+							/* affichages */ 
+							affichageLabel();
+
+							/* mise a jour de la liste de commandes */
+							insererLabel(&listeLabels, &listeCommandes);
+						break;
+					}
+
+					viderBuffer();
+					sortieBoucle = choixInstruction2();					
+				}else if(sortieBoucle == '3') { 
+				/* instruction 2 : récapitulatif des commandes */
+
+					/* affichage de la liste des commandes */
+					affichageListeCommande();
+					
+					viderBuffer();
+					sortieBoucle = choixInstruction2();	
+				}else if(sortieBoucle == '4') { 
+				/* instruction 3 : récapitulatif des labels */
+
+					/* affichage de la liste des labels */
+					affichageListeLabel();
+					
+					viderBuffer();
+					sortieBoucle = choixInstruction2();	
+
+				}
+			}			
+		}
+
+	}while(mode != 'q' && mode != 'Q');
 
 	printf("\nAu revoir\n");
 
@@ -167,12 +229,12 @@ char choixMode() {
 		printf("\n*\t> ");
 
 		scanf("%c",&c);
-	}while(c != '0' && c != '1' && c != 'q' && c != 'Q');
+	}while(c != '1' && c != '2' && c != 'q' && c != 'Q');
 
 	return c;
 }
 
-char choixInstruction() {
+char choixInstruction1() {
 	
 	char c;
 
@@ -184,11 +246,31 @@ char choixInstruction() {
 		printf("\n*\t- recapitulatif des labels            (3)              *");
 		printf("\n*\t- enregistrer cette commande          (4)              *");
 		printf("\n*\t- enregistrer toutes les commandes    (5)              *");
-		printf("\n*\t- quitter                             (Q)              *");
+		printf("\n*\t- quitter (retour au menu principal)  (Q)              *");
 		printf("\n*\t> ");
 
 		scanf("%c",&c);
-	}while(c != '1' && c != '2' && c != '3' && c != '4' && c != 'q' && c != 'Q');
+	}while(c != '1' && c != '2' && c != '3' && c != '4' && c != '5' && c != 'q' && c != 'Q');
+
+	return c;
+}
+
+char choixInstruction2() {
+	
+	char c;
+
+	do {
+		printf("\n****************************************************************");
+		printf("\n*  Choix :                                                     *");
+		printf("\n*\t- ecriture commandes une par une      (1)              *");
+		printf("\n*\t- eriture complete                    (2)              *");
+		printf("\n*\t- recapitulatif des commandes         (3)              *");
+		printf("\n*\t- recapitulatif des labels            (4)              *");
+		printf("\n*\t- quitter (retour au menu principal)  (Q)              *");
+		printf("\n*\t> ");
+
+		scanf("%c",&c);
+	}while(c != '1' && c != '2' && c != '3' && c != '4'&& c != 'q' && c != 'Q');
 
 	return c;
 }
