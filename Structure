@@ -1,0 +1,19 @@
+Structure envisagée pour l'émulateur :
+
+->Bloc d'entrée, décodage des instructions et conversion en binaire
+
+->Bloc mémoire (RAM contenant instructions et données, tableau de registres généraux et registres spéciaux)
+=	- Tableau de 32 INT stocke les registres généraux, indexé par les identifiants des registres
+=
+=	- Trois variables INT (déclarées séparément du tableau? Ou bien en faisant partie, donc un tableau de 35 INT?)
+=	  qui correspondent aux registres spéciaux (SP, HI, LO)
+=
+=	- RAM, comment l'implémenter? Un malloc dans la RAM du PC?
+
+->Bloc simulation (exécution des instructions et traitement des données, dans un fichier séparé du main)
+=	- Possède une fonction pour chaque instruction, prenant en paramètre les registres/valeurs
+	  Les fonctions écrivent directement dans le registre de destination
+
+->Bloc interface utilisateur (Problème, le traitement du décodage est en partie au milieu de notre main)
+
+====
