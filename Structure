@@ -8,7 +8,9 @@ Structure envisagée pour l'émulateur :
 =	- Trois variables INT (déclarées séparément du tableau? Ou bien en faisant partie, donc un tableau de 35 INT?)
 =	  qui correspondent aux registres spéciaux (SP, HI, LO)
 =
-=	- RAM, comment l'implémenter? Un malloc dans la RAM du PC?
+=	- RAM, comment l'implémenter?
+=	  Si on décide d'allouer moins de 2Go, on peut faire un malloc. On aura une adresse de début (start)
+=	  On aura AddrPhysique = start+AddrLogique, AddrPhysique étant l'adresse en RAM du PC
 
 ->Bloc simulation (exécution des instructions et traitement des données, dans un fichier séparé du main)
 =	- Possède une fonction pour chaque instruction, prenant en paramètre les registres/valeurs
