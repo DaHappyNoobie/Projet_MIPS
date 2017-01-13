@@ -74,27 +74,48 @@ int decodageInstruction() {
 /* 2 : etiquette detecte avec instruction */
 /* 3 : etiquette detecte sans instruction */
 /* 4 : pas d'instruction */
+/* 5 : data */
 
 	int i = 0;
+	int indice = 30;
 
 	if(verificationEtiquette()) { /* Cas où il y a une étiquette */
+		if(verificationData()) {
+			printf("\nDetection data");
 
-		printf("\nDetection d'une etiquette");
+			tailleData = cherchertype(30);
 
-		/* encodage */
-		encodageLabels();
+			indice = chercherValeur(30)+1;
 
-		/* on detecte la presence d'une instruction sur la même ligne */
-		while((commandeString[i] < 36 || commandeString[i] > 122) && i<30 ) {
-			i++;
+			encodageData(indice);
+
+			printf("\n%d\n", tailleData);
+
+			for (int i = 0; i < 32; ++i)
+			{
+				printf("%c", dataBinaire[i]);
+			}
+
+			return 5;
+
+		}else {
+			printf("\nDetection d'une etiquette");
+
+			/* encodage */
+			encodageLabels();
+
+			/* on detecte la presence d'une instruction sur la même ligne */
+			while((commandeString[i] < 36 || commandeString[i] > 122) && i<30 ) {
+				i++;
+			}
+
+			/* si il y a une instruction */
+			if(i != 30){
+				return 2;
+			}
+
+			return 3;
 		}
-
-		/* si il y a une instruction */
-		if(i != 30){
-			return 2;
-		}
-
-		return 3;
 
 	}else { /* Cas où il n'y a pas d'étiquette */
 	switch(commandeString[i]) {
@@ -224,6 +245,16 @@ int verificationEtiquette() {
 	
 	for(int i=0; i<30; i++) {
 		if(commandeString[i] == ':'){
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+int verificationData(){
+	for(int i=0; i<30; i++) {
+		if(commandeString[i] == '.'){
 			return 1;
 		}
 	}
@@ -437,6 +468,32 @@ void encodageValeur(int indice) {
 	}	
 }
 
+void encodageData(int indice) {
+	int i = 0;
+	unsigned int valeur = 0;
+	int reste = -1;
+	int nbr;
+
+	if(tailleData != -1)
+	do {
+		valeur = valeur * 10;
+		valeur += commandeString[i+indice] - '0';
+		i++;
+	}while(commandeString[indice+i] >= 48 && commandeString[indice+i] <= 57);
+
+	for(int i=0; i<tailleData-1; i++) {
+		reste = valeur%2;
+		printf(" %d",reste);
+		if( reste == 0 ){
+			dataBinaire[i] = '0';
+		}else {
+			dataBinaire[i] = '1';
+			valeur = valeur-1;			
+		}
+		valeur = valeur/2;
+	}
+}
+
 void encodageImmediat(int indice) {
 
 	int i = 0;
@@ -496,6 +553,26 @@ int chercherValeur(int indice) {
 		}
 	}while(trouve != '2');
 	return i;
+}
+
+int cherchertype(int indice) {
+
+	int i = indice;
+	char trouve = '0';
+
+	do {
+		i--;
+		if(commandeString[i] == '.') {
+			trouve = '2';
+		}
+	}while(trouve != '2');
+
+	if(commandeString[i+1] == 'b') {
+		return 8;
+	}else if(commandeString[i+1] == 'w') {
+		return 32;
+	}
+	return -1;
 }
 
 void convertCommande() {

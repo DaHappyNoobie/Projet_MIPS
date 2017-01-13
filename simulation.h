@@ -32,12 +32,29 @@ struct labelStructure {
 typedef label *listeLabel;
 
 /* ******************************************************************** */
+/* structure de la liste chainee de la data */
+
+typedef struct dataStructure data;
+struct dataStructure {
+
+	unsigned char adresse[8];
+	int taille; /* taille en octet */
+	unsigned char dataValeur[32]; /* data au format binaire */
+
+	struct dataStructure* suivant; /* adresse du successeur */
+};
+
+typedef data *listeData;
+
+/* ******************************************************************** */
 /* variables d'encodages */ 
 
 char commandeString[30];
 unsigned char commandeBinaire[32];
 unsigned char commandeHexa[8];
 unsigned char labelNom[10];
+unsigned char dataBinaire[32];
+unsigned char dataNom[10];
 
 /* ******************************************************************** */
 /* variables de stockages pour l'encodage */ 
@@ -46,12 +63,14 @@ unsigned char labelNom[10];
 char registreBinaire[5]; 
 char valeurBinaire[5];
 char immediatBinaire[26];
+int tailleData;
 
 /* ******************************************************************** */
 /* liste chainee pour la simulation */
 
 listeCommande listeCommandes;
 listeLabel listeLabels;
+listeData listeDatas;
 
 /* ******************************************************************** */
 /* Fonctions de la liste chainé contenant les commandes */
@@ -66,6 +85,13 @@ void creationAdresseInstruction(listeCommande *cou, listeCommande *nouv, int ind
 void insererLabel(listeLabel *l, listeCommande *ll);
 label* labelNouveau();
 void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice);
+
+/* ******************************************************************** */
+/* Fonctions de la liste chainé contenant la Data */
+
+void insererData(listeData *l, int taille);
+void creationAdresseData(listeData *cou, listeData *nouv, int indice);
+data* dataNouveau();
 
 /* ******************************************************************** */
 /* Fonctions communes */

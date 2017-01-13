@@ -257,6 +257,133 @@ void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice) {
 		}		
 	}
 }
+
+/* ******************************************************************** */
+/* Fonctions de la liste chainé contenant la Data */
+
+void insererData(listeData *l, int taille) {
+
+	data *courant, *nouveau;
+
+	courant = *l;
+
+	/* Détermination de la fin de la liste */
+	while ( courant != NULL && courant->suivant != NULL ){
+
+		courant = courant->suivant;
+	}
+	nouveau = dataNouveau();
+
+	if (courant == NULL) {
+		*l = nouveau;
+
+		nouveau->adresse[0] = '1';
+		nouveau->adresse[1] = '0';
+		nouveau->adresse[2] = '0';
+		nouveau->adresse[3] = '1';
+		nouveau->adresse[4] = '0';
+		nouveau->adresse[5] = '0';
+		nouveau->adresse[6] = '0';
+		nouveau->adresse[7] = '0';
+
+	}else{
+		courant->suivant = nouveau;
+		creationAdresseData(&courant, &nouveau, 7);
+	}
+
+	if(taille == 4 || taille==1) {
+		for(int i=0; i<taille*8; i++) {
+			nouveau->dataValeur[i] = dataBinaire[i];
+		}		
+	}else {
+		for (int i = 0; i < taille*8; ++i) {
+			nouveau->dataValeur[i] = '0';
+		}
+	}
+
+	nouveau->taille = taille;
+
+	nouveau->suivant = NULL;
+}
+
+void creationAdresseData(listeData *cou, listeData *nouv, int indice) {
+
+	data *courant, *nouveau;
+
+	courant = *cou;
+	nouveau = *nouv;
+
+
+	if(indice == 7) {
+		if(courant->adresse[indice] == 'c') {
+			nouveau->adresse[indice] = '0';
+
+			creationAdresseData(&courant, &nouveau, indice-1);
+
+			*nouv = nouveau; 
+
+		}else {
+
+			if(courant->adresse[indice] == '0') {
+				nouveau->adresse[indice] = '4';
+
+			}else if(courant->adresse[indice] == '4') {
+				nouveau->adresse[indice] = '8';
+			}else if(courant->adresse[indice] == '8') {
+				nouveau->adresse[indice] = 'c';
+			}else {
+				printf("\nErreur de la fonction <creationAdresseInstruction> : adresse");
+			}
+
+			indice--;
+
+			while(indice >= 0) {
+				nouveau->adresse[indice] = courant->adresse[indice];
+				indice--;			
+			}
+
+			*nouv = nouveau; 
+
+		}		
+	}else {
+		if(courant->adresse[indice] == 'f') {
+			nouveau->adresse[indice] = '0';
+
+			creationAdresseData(&courant, &nouveau, indice-1);
+      
+			*nouv = nouveau; 
+		}else {
+
+			if( (courant->adresse[indice] >= 48 && courant->adresse[indice] <= 56) || (courant->adresse[indice] >= 97 && courant->adresse[indice] <= 101)) {
+				nouveau->adresse[indice] = courant->adresse[indice] + 1;
+
+			}else if(courant->adresse[indice] == '9') {
+				nouveau->adresse[indice] = 'a';
+			}else {
+				printf("\nErreur de la fonction <creationAdresseInstruction> : adresse");
+			}
+
+			indice--;
+
+			while(indice >= 0) {
+				nouveau->adresse[indice] = courant->adresse[indice];
+				indice--;
+			}
+			*nouv = nouveau;
+		}
+	}
+}
+
+data* dataNouveau() {
+
+	data* lab = (data*) malloc(sizeof(data));
+
+	/* Initialisation du nouveau data */
+	lab->suivant = NULL;
+
+	return lab;
+}
+
 /* ******************************************************************** */
 /* Fonctions communes */
 
@@ -275,5 +402,4 @@ void affichageStringCommande() {
 		c = commandeString[i];
 
 	}while(c != '\n' && c!= '\0' && c != EOF);
-
 }

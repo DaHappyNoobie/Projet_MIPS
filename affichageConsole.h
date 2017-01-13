@@ -6,3 +6,4 @@ void affichageLabel();
 void affichageHexaCommande();
 void affichageListeCommande();
 void affichageListeLabel();
+void affichageMemoire();

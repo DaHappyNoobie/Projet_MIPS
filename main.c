@@ -76,6 +76,9 @@ int main() {
 							/* mise a jour de la liste de commandes */
 							insererLabel(&listeLabels, &listeCommandes);
 						break;
+						case 5 : /* seulement un data a enregistrer */
+
+						break;
 					}
 
 					sortieBoucle = choixInstruction1();	
@@ -281,6 +284,8 @@ int main() {
 
 				}
 			}
+		}else if(mode == '3') {
+			affichageMemoire();
 		}
 
 	}while(mode != 'q' && mode != 'Q');
@@ -304,11 +309,12 @@ char choixMode() {
 		printf("\n*\t- entree des commandes dans la console   (1)           *");
 		printf("\n*\t- lecture d'un fichier de commandes      (2)           *");
 		printf("\n*  Attention les fichiers de sortie seront effaces             *");
+		printf("\n*\t- lecture d'un fichier de commandes      (3)           *");		
 		printf("\n*\t- quitter                                (Q)           *");
 		printf("\n*\t> ");
 
 		scanf("%c",&c);
-	}while(c != '1' && c != '2' && c != 'q' && c != 'Q');
+	}while(c != '1' && c != '2' && c != '3' && c != 'q' && c != 'Q');
 
 	return c;
 }

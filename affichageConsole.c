@@ -72,7 +72,10 @@ void affichageListeCommande() {
 	printf("\nAdresses       hexadecimal\t        Commandes binaire       ");
 	printf("\n");
 
-	while ( courant != NULL ) {
+	if( courant == NULL )
+		return;
+
+	do {
 		printf("\n");
 
 		for(int i=0; i<8; i++) {
@@ -96,8 +99,11 @@ void affichageListeCommande() {
 				printf(" ");
 			}
 	 	}
-		courant = courant->suivant;
-	}
+
+	 	if(courant->suivant != NULL)
+			courant = courant->suivant;
+
+	}while ( courant->suivant != NULL );
 }
 
 void affichageListeLabel() {
@@ -123,4 +129,153 @@ void affichageListeLabel() {
 	 	}		
 		courant = courant->suivant;
 	}
+}
+
+void affichageMemoire() {
+
+	commande *listeCom, *courant;
+	listeCom = listeCommandes;
+	courant = listeCom;
+
+	data *listeData, *courantData;
+	listeData = listeDatas;
+	courantData = listeData;
+
+	printf("\nAdresses\tDonnes");
+	printf("\n");	
+
+	/* affichage de la memoire OS */
+	printf("\n[0x00000000]");
+	printf("\tmemoire de l'OS");
+	printf("\n    ...     ");
+	printf("\tmemoire de l'OS");
+	printf("\n[0x003FFFF0]");
+	printf("\tmemoire de l'OS");
+
+	printf("\n");
+
+	while(listeCom != NULL) {
+
+		printf("\n[0x");
+
+		for(int i=0; i<8; i++) {
+			printf("%c", listeCom->adresse[i]);
+		};
+
+		printf("]\t");
+
+		for(int i=31; i>-1; i--) {
+			printf("%c", listeCom->codeBinaire[i]);
+
+			if(i%4 == 0 && i != 31 && i != 0) {
+				printf(" ");
+			}
+	 	}
+
+	 	if(listeCom->suivant == NULL) {
+	 		printf("\n[0x");
+	 		creationAdresseInstruction(&listeCom, &courant, 7);
+
+			for(int i=0; i<8; i++) {
+				printf("%c", courant->adresse[i]);
+			}; 		
+			printf("]");
+	 	}
+		listeCom = listeCom->suivant;
+	}
+
+	printf("\t0000 0000 0000 0000 0000 0000 0000 0000");
+	printf("\n    ...     ");
+	printf("\t0000 0000 0000 0000 0000 0000 0000 0000");
+	printf("\n[0x0FFFFFFF]");
+	printf("\t0000 0000 0000 0000 0000 0000 0000 0000");
+
+	printf("\n");
+
+	printf("\n[0x10000000]");
+	printf("\tmemoire Static");
+	printf("\n    ...     ");
+	printf("\tmemoire Static");
+	printf("\n[0x1000FFFF]");
+	printf("\tmemoire Static");	
+
+	printf("\n");
+
+	while(listeData != NULL) {
+
+	if(listeData->taille == 4) {
+		printf("\n[0x");
+
+		for(int i=0; i<8; i++) {
+			printf("%c", listeData->adresse[i]);
+		}
+
+		printf("]\t");
+
+		for(int i=32; i>-1; i--) {
+			printf("%c", listeData->dataValeur[i]);
+
+			if(i%4 == 0 && i != 31 && i != 0) {
+				printf(" ");
+			}
+	 	}
+	}else if(listeData->taille == 1) {
+		if(listeData->adresse[7]=='0' || listeData->adresse[7]=='4' || listeData->adresse[7]=='8' || listeData->adresse[7]=='C') {
+			printf("\n[0x");
+
+			for(int i=0; i<8; i++) {
+				printf("%c", listeData->adresse[i]);
+			}
+			printf("]");			
+		}	
+		printf("\t");
+
+		for(int i=8; i>-1; i--) {
+			printf("%c", listeData->dataValeur[i]);
+
+			if(i%4 == 0 && i != 31 && i != 0) {
+				printf(" ");
+			}
+	 	}		
+
+	}else {
+		if(listeData->adresse[7]=='0' || listeData->adresse[7]=='4' || listeData->adresse[7]=='8' || listeData->adresse[7]=='C') {
+			printf("\n[0x");
+
+			for(int i=0; i<8; i++) {
+				printf("%c", listeData->adresse[i]);
+			}
+			printf("]");			
+		}
+		
+		printf("\t");
+
+		for(int i=listeData->taille*8; i>-1; i--) {
+			printf("%c", listeData->dataValeur[i]);
+
+			if(i%4 == 0 && i != 31 && i != 0) {
+				printf(" ");
+			}
+	 	}	
+	}
+
+
+	 	if(listeData->suivant == NULL) {
+	 		printf("\n[0x");
+	 		creationAdresseData(&listeData, &courantData, 7);
+
+			for(int i=0; i<8; i++) {
+				printf("%c", courantData->adresse[i]);
+			}; 		
+			printf("]");
+	 	}
+		listeData = listeData->suivant;
+	}
+
+	printf("\t0000 0000 0000 0000 0000 0000 0000 0000");
+	printf("\n    ...     ");
+	printf("\t0000 0000 0000 0000 0000 0000 0000 0000");
+	printf("\n[0xFFFFFFFF]");
+	printf("\t0000 0000 0000 0000 0000 0000 0000 0000");
+
 }
