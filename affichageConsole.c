@@ -145,8 +145,9 @@ void affichageListeCommande(listeCommande *listeCommandes) {
 void affichageListeLabel(listeLabel *listeLabels) {
 	
 	label *courant;
-	courant = listeLabels;
+	courant = *listeLabels;
 	char c;
+	int i = 0;
 
 	printf("\nAdresses\tNom");
 	printf("\n");
@@ -158,11 +159,13 @@ void affichageListeLabel(listeLabel *listeLabels) {
 			printf("%c", courant->adresse[i]);
 		};
 		printf("\t");
-		for(int i=0; i<10; i++) {
+		do {
 			c = courant->nom[i];
 			printf("%c", c);
+			i++;
 
-	 	}		
+	 	}while(i<10 && courant->nom[i]!='\0');
+
 		courant = courant->suivant;
 	}
 }
@@ -170,10 +173,10 @@ void affichageListeLabel(listeLabel *listeLabels) {
 void affichageListeData(listeData *listeDatas) {
 	
 	data *courant;
-	courant = listeDatas;
+	courant = *listeDatas;
 	char c;
 
-	printf("\nAdresses\tNom\tTaille\tValeur");
+	printf("\nAdresses\tNom\t\tTaille\t  Valeur");
 	printf("\n");
 
 	while ( courant != NULL ) {
@@ -202,14 +205,15 @@ void affichageListeData(listeData *listeDatas) {
 void affichageMemoire(listeCommande *listeCommandes, listeData *listeDatas) {
 
 	commande *listeCom, *courant;
-	listeCom = listeCommandes;
+	listeCom = *listeCommandes;
 	courant = listeCom;
 
 	data *listeData, *courantData;
-	listeData = listeDatas;
+	listeData = *listeDatas;
 	courantData = listeData;
 
 	printf("\nAdresses\tDonnes");
+	printf("\n\t\t0.....................................31");
 	printf("\n");	
 
 	/* affichage de la memoire OS */

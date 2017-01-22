@@ -27,6 +27,8 @@ int main() {
 	char mode = 's';
 	int etat = -1;
 
+	data *plop;
+
 	/* on efface les fichiers de sorties */
 	remove("fichierSortieBinaire.txt");
 	remove("fichierSortieHexa.txt");
@@ -59,7 +61,7 @@ int main() {
 					consoleLectureCommande(commandeString);
 					minusculeStringCommande(commandeString);
 					/* décodage */
-					etat = decodageInstruction(commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
+					etat = decodageInstruction(&listeCommandes, &listeDatas, commandeHexa, commandeString, dataBinaire, &(tailleData), dataNom, labelNom, commandeBinaire);
 
 					switch(etat) {
 						case 1 : /* seulement une instruction */
@@ -74,7 +76,7 @@ int main() {
 							insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
 						break;
 						case 2 : /* un label et une instruction */
-							etat = decodageInstruction(commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
+							etat = decodageInstruction(&listeCommandes, &listeDatas, commandeHexa, commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
 
 							/* convertion en hexadecimal */
 							convertCommande( commandeBinaire, commandeHexa);
@@ -99,12 +101,12 @@ int main() {
 							insererLabel(&listeLabels, &listeCommandes, labelNom);
 						break;
 						case 5 : /* seulement un data a enregistrer */
-
+							printf("\n%d", tailleData);
 							/* affichages */
 							affichageData(dataBinaire, dataNom, tailleData);
-
 							insererData(&listeDatas, dataBinaire, dataNom, tailleData);
-
+							plop = listeDatas;
+							printf("\n%d",(plop->taille));
 						break;
 					}
 
@@ -165,58 +167,54 @@ int main() {
 						affichageStringCommande(commandeString);
 						minusculeStringCommande(commandeString);
 
-						etat = decodageInstruction(commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
+						etat = decodageInstruction(&listeCommandes, &listeDatas, commandeHexa, commandeString, dataBinaire, &(tailleData), dataNom, labelNom, commandeBinaire);
 
-						switch(etat) {
-							case 1 : /* seulement une instruction */
-								/* convertion en hexadecimal */
-								convertCommande(commandeBinaire, commandeHexa);
+					switch(etat) {
+						case 1 : /* seulement une instruction */
+							/* convertion en hexadecimal */
+							convertCommande( commandeBinaire, commandeHexa);
 
-								/* affichages */
-								affichageBinaireCommande(commandeBinaire);
-								affichageHexaCommande(commandeHexa);
+							/* affichages */ 
+							affichageBinaireCommande(commandeBinaire);
+							affichageHexaCommande(commandeHexa); 
 
-								/* mise a jour de la liste de commandes */
-								insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
+						break;
+						case 2 : /* un label et une instruction */
+							etat = decodageInstruction(&listeCommandes, &listeDatas, commandeHexa, commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
 
-								if(ecritUCharTab(ficOutB, 'b', commandeBinaire, commandeHexa)) printf("\nEcriture B reussie.");
-								else printf("\nErreur d'ecriture B.");
+							/* convertion en hexadecimal */
+							convertCommande( commandeBinaire, commandeHexa);
 
-								if(ecritUCharTab(ficOutH, 'h', commandeBinaire, commandeHexa)) printf("\nEcriture H reussie.");
-								else printf("\nErreur d'ecriture H.");
-							break;
-							case 2 : /* un label et une instruction */
-								etat = decodageInstruction(commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
+							/* affichages */ 
+							affichageLabel(labelNom);
+							affichageBinaireCommande(commandeBinaire);
+							affichageHexaCommande(commandeHexa); 
 
-								/* convertion en hexadecimal */
-								convertCommande(commandeBinaire, commandeHexa);
+							/* mise a jour de la liste de labels */
+							insererLabel(&listeLabels, &listeCommandes, labelNom);
+							
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
+						break;
+						case 3 : /* seulement un label */
 
-								/* affichages */
-								affichageLabel(labelNom);
-								affichageBinaireCommande(commandeBinaire);
-								affichageHexaCommande(commandeHexa);
+							/* affichages */ 
+							affichageLabel(labelNom);
 
-								/* mise a jour de la liste de labels */
-								insererLabel(&listeLabels, &listeCommandes, labelNom);
-
-								/* mise a jour de la liste de commandes */
-								insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
-
-								if(ecritUCharTab(ficOutB, 'b', commandeBinaire, commandeHexa)) printf("\nEcriture B reussie.");
-								else printf("\nErreur d'ecriture B.");
-
-								if(ecritUCharTab(ficOutH, 'h', commandeBinaire, commandeHexa)) printf("\nEcriture H reussie.");
-								else printf("\nErreur d'ecriture H.");
-							break;
-							case 3 : /* seulement un label */
-								/* affichages */
-								affichageLabel(labelNom);
-
-								/* mise a jour de la liste de commandes */
-								insererLabel(&listeLabels, &listeCommandes, labelNom);
-							break;
-							//case 4 : /*Pas d'instruction ni de label*/
-						}
+							/* mise a jour de la liste de commandes */
+							insererLabel(&listeLabels, &listeCommandes, labelNom);
+						break;
+						case 5 : /* seulement un data a enregistrer */
+							printf("\n%d", tailleData);
+							/* affichages */
+							affichageData(dataBinaire, dataNom, tailleData);
+							insererData(&listeDatas, dataBinaire, dataNom, tailleData);
+							plop = listeDatas;
+							printf("\n%d",(plop->taille));
+						break;
+					}
 
 						//viderBuffer();
 						printf("\nAppuyez sur Entree pour continuer, ou Q pour quitter > ");
@@ -236,58 +234,56 @@ int main() {
 						affichageStringCommande( commandeString);
 						minusculeStringCommande(commandeString);
 
-						etat = decodageInstruction(commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
+						etat = decodageInstruction(&listeCommandes, &listeDatas, commandeHexa, commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
 
-						switch(etat) {
-							case 1 : /* seulement une instruction */
-								/* convertion en hexadecimal */
-								convertCommande(commandeBinaire, commandeHexa);
+						etat = decodageInstruction(&listeCommandes, &listeDatas, commandeHexa, commandeString, dataBinaire, &(tailleData), dataNom, labelNom, commandeBinaire);
 
-								/* affichages */
-								affichageBinaireCommande(commandeBinaire);
-								affichageHexaCommande(commandeHexa);
+					switch(etat) {
+						case 1 : /* seulement une instruction */
+							/* convertion en hexadecimal */
+							convertCommande( commandeBinaire, commandeHexa);
 
-								/* mise a jour de la liste de commandes */
-								insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
+							/* affichages */ 
+							affichageBinaireCommande(commandeBinaire);
+							affichageHexaCommande(commandeHexa); 
 
-								if(ecritUCharTab(ficOutB, 'b', commandeBinaire, commandeHexa)) printf("\nEcriture B reussie.");
-								else printf("\nErreur d'ecriture B.");
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
+						break;
+						case 2 : /* un label et une instruction */
+							etat = decodageInstruction(&listeCommandes, &listeDatas, commandeHexa, commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
 
-								if(ecritUCharTab(ficOutH, 'h', commandeBinaire, commandeHexa)) printf("\nEcriture H reussie.");
-								else printf("\nErreur d'ecriture H.");
-							break;
-							case 2 : /* un label et une instruction */
-								etat = decodageInstruction(commandeString, dataBinaire, &tailleData, dataNom, labelNom, commandeBinaire);
+							/* convertion en hexadecimal */
+							convertCommande( commandeBinaire, commandeHexa);
 
-								/* convertion en hexadecimal */
-								convertCommande(commandeBinaire, commandeHexa);
+							/* affichages */ 
+							affichageLabel(labelNom);
+							affichageBinaireCommande(commandeBinaire);
+							affichageHexaCommande(commandeHexa); 
 
-								/* affichages */
-								affichageLabel(labelNom);
-								affichageBinaireCommande(commandeBinaire);
-								affichageHexaCommande(commandeHexa);
+							/* mise a jour de la liste de labels */
+							insererLabel(&listeLabels, &listeCommandes, labelNom);
+							
+							/* mise a jour de la liste de commandes */
+							insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
+						break;
+						case 3 : /* seulement un label */
 
-								/* mise a jour de la liste de labels */
-								insererLabel(&listeLabels, &listeCommandes, labelNom);
+							/* affichages */ 
+							affichageLabel(labelNom);
 
-								/* mise a jour de la liste de commandes */
-								insererCommande(&listeCommandes, commandeBinaire, commandeHexa, commandeString);
-
-								if(ecritUCharTab(ficOutB, 'b', commandeBinaire, commandeHexa)) printf("\nEcriture B reussie.");
-								else printf("\nErreur d'ecriture B.");
-
-								if(ecritUCharTab(ficOutH, 'h', commandeBinaire, commandeHexa)) printf("\nEcriture H reussie.");
-								else printf("\nErreur d'ecriture H.");
-							break;
-							case 3 : /* seulement un label */
-								/* affichages */
-								affichageLabel(labelNom);
-
-								/* mise a jour de la liste de commandes */
-								insererLabel(&listeLabels, &listeCommandes, labelNom);
-							break;
-							//case 4 : /*Pas d'instruction ni de label*/
-						}
+							/* mise a jour de la liste de commandes */
+							insererLabel(&listeLabels, &listeCommandes, labelNom);
+						break;
+						case 5 : /* seulement un data a enregistrer */
+							printf("\n%d", tailleData);
+							/* affichages */
+							affichageData(dataBinaire, dataNom, tailleData);
+							insererData(&listeDatas, dataBinaire, dataNom, tailleData);
+							plop = listeDatas;
+							printf("\n%d",(plop->taille));
+						break;
+					}
 
 						sortieBoucle='2';
 
@@ -338,7 +334,7 @@ int main() {
 						processusSimulation( &listeCommandes, &listeDatas, &listeLabels, &programCounter, registres, 1);
 					break;
 					case '2' :
-
+						processusSimulation( &listeCommandes, &listeDatas, &listeLabels, &programCounter, registres, 2);			
 					break;
 					default : 
 						printf("\nErreur mode simulation (Processus)");
@@ -381,7 +377,7 @@ char choixMode() {
 		printf("\n*\t- lecture d'un fichier de commandes      (2)           *");
 		printf("\n*  Attention les fichiers de sortie seront effaces             *");
 		printf("\n*\t- recapitulatif des variables            (3)           *");
-		printf("\n*\t- lecture d'un fichier de commandes      (4)           *");				
+		printf("\n*\t- affichage de la memoire                (4)           *");				
 		printf("\n*\t- simulation                             (5)           *");
 		printf("\n*\t- quitter                                (Q)           *");
 		printf("\n*\t> ");

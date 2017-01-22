@@ -2,11 +2,11 @@
 
 void adresseRegistre(int indice, char commandeString[], char registreBinaire[]);
 void adresseRegistreBinaire(int, char registreBinaire[]);
-int decodageInstruction(char commandeString[], char dataBinaire[], int *tailleData, char dataNom[], char labelNom[], char commandeBinaire[]);
+int decodageInstruction( listeCommande *listeCommandes, listeData *listeDatas, char commandeHexa[], char commandeString[], char dataBinaire[], int *tailleData, char dataNom[], char labelNom[], char commandeBinaire[]);
 int verificationEtiquette(char commandeString[]);
 int verificationData(char commandeString[]);
 void encodageInstructionR(char opcode[], char function[],  char operandes[], char commandeBinaire[], char commandeString[]);
-void encodageInstructionI(char opcode[], char operandes[], char commandeBinaire[], char commandeString[]);
+void encodageInstructionI( listeData *listeDatas, char opcode[], char operandes[], char commandeBinaire[], char commandeString[]);
 void encodageInstructionJ(char opcode[], char commandeBinaire[]);
 void encodageLabels(char commandeString[], char labelNom[]);
 void encodageInstructionValeur(int *indice1, int indice2, int taille, int ordre, char commandeBinaire[], char commandeString[]);

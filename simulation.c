@@ -22,7 +22,7 @@ void insererCommande(listeCommande *l,char commandeBinaire[],char commandeHexa[]
 	nouveau = commandeNouveau();
 
 	if (courant == NULL) {
-		
+
 		*l = nouveau;
 
 		nouveau->adresse[0] = '0';
@@ -279,6 +279,8 @@ void insererData(listeData *l, char dataBinaire[], char dataNom[], int tailleDat
 		courant = courant->suivant;
 	}
 	nouveau = dataNouveau();
+
+	printf("\n%d",tailleData);
 
 	nouveau->taille = tailleData;
 

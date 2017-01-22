@@ -13,6 +13,12 @@ void processusSimulation(listeCommande *listeCommandes, listeData *listeDatas, l
 			instructionDecode(programCounter, registres);
 			pc = pc->suivant;
 		}
+	}else {
+		while(pc != NULL) {
+			instructionDecode(programCounter, registres);
+			pc = pc->suivant;	
+			*programCounter = pc;			
+		}
 	}
 
 	*programCounter = pc;		
@@ -142,6 +148,8 @@ void instructionDecode(listeCommande *programCounter, int registres[]) {
 			if(pc->codeBinaire[31] == '1') { /* LW ou SW */
 			}else if(pc->codeBinaire[29] == '1') { /* ADDI ou LUI */
 				if(pc->codeBinaire[28] == '1') { /* LUI */
+					printf("Commande LUI");
+					instructionLUI( programCounter, registres);
 				}else { /* ADDI */
 					printf("Commande ADDI");
 					instructionADDI( programCounter, registres);
@@ -216,7 +224,7 @@ void instructionDecodeR(listeCommande *programCounter, int registres[]) {
 				}
 			}else { /* ROTR, SLL ou SRC */
 				if(pc->codeBinaire[1] == '1') { /* ROTR ou SRC */
-					if(pc->codeBinaire[21] = '1') { /* ROTR */
+					if(pc->codeBinaire[21] == '1') { /* ROTR */
 					}else { /* SRL */
 					}
 				}else { /* SLL */
@@ -226,7 +234,7 @@ void instructionDecodeR(listeCommande *programCounter, int registres[]) {
 	}
 }
 
-int convBin2Dec(char commande[], int indice1, int taille) {
+int convBin2Dec(unsigned char commande[], int indice1, int taille) {
 		int i = indice1;
 		int resultat = 0;
 		int tamp = 2;
@@ -272,7 +280,7 @@ void instructionAND(listeCommande *programCounter, int registres[]) {
 	unsigned int valeur = 0;
 	int reste = -1;
 
-	char registres1[32], registres2[32], registres3[32];
+	unsigned char registres1[32], registres2[32], registres3[32];
 
 	valeur = registres[convBin2Dec(pc->codeBinaire, 25, 5)];
 
@@ -346,7 +354,7 @@ void instructionOR(listeCommande *programCounter, int registres[]) {
 	unsigned int valeur = 0;
 	int reste = -1;
 
-	char registres1[32], registres2[32], registres3[32];
+	unsigned char registres1[32], registres2[32], registres3[32];
 
 	valeur = registres[convBin2Dec(pc->codeBinaire, 25, 5)];
 
@@ -414,7 +422,7 @@ void instructionXOR(listeCommande *programCounter, int registres[]) {
 	unsigned int valeur = 0;
 	int reste = -1;
 
-	char registres1[32], registres2[32], registres3[32];
+	unsigned char registres1[32], registres2[32], registres3[32];
 
 	valeur = registres[convBin2Dec(pc->codeBinaire, 25, 5)];
 
@@ -460,4 +468,19 @@ void instructionADDI(listeCommande *programCounter, int registres[]) {
 	pc = *programCounter;
 
 	registres[convBin2Dec(pc->codeBinaire, 20, 5)] = registres[convBin2Dec(pc->codeBinaire, 25, 5)] + convBin2Dec(pc->codeBinaire, 15, 16);
+}
+
+void instructionLUI(listeCommande *programCounter, int registres[]) {
+
+	commande *pc;
+	pc = *programCounter;
+
+	unsigned char registre1[32];
+
+	for (int i = 0; i < 16; ++i)
+	{
+		registre1[i+16] = pc->codeBinaire[i];
+	}
+
+	registres[convBin2Dec(pc->codeBinaire, 20, 5)] = convBin2Dec(registre1, 31, 32);
 }

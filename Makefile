@@ -3,7 +3,7 @@
 CC = gcc
 OBJECTS = main.o fichier.o simulation.o encodage.o affichageConsole.o processus.o
 FLAGS = -Wall -ansi -pedantic -std=c99
-OUTPUT = prog
+OUTPUT = programme
 F_ECRITURE = fichierSortieBinaire.txt fichierSortieHexa.txt
 
 all: $(OBJECTS)

@@ -67,7 +67,7 @@ void adresseRegistreBinaire(int registre, char registreBinaire[]) {
 	}
 }
 
-int decodageInstruction(char commandeString[], char dataBinaire[], int *tailleData, char dataNom[], char labelNom[], char commandeBinaire[]) {
+int decodageInstruction( listeCommande *listeCommandes, listeData *listeDatas, char commandeHexa[], char commandeString[], char dataBinaire[], int *tailleData, char dataNom[], char labelNom[], char commandeBinaire[]) {
 /* Cette procedure va nous permettre de déterminer le type d'instruction (R,I,J) */
 /* return : */
 /* 1 : instruction reconnue */
@@ -78,16 +78,19 @@ int decodageInstruction(char commandeString[], char dataBinaire[], int *tailleDa
 
 	int i = 0;
 	int indice = 30;
+	int plop;
 
-	if(verificationEtiquette(commandeString)) { /* Cas où il y a une étiquette */
+	if(verificationEtiquette(commandeString) == 1) { /* Cas où il y a une étiquette */
 		if(verificationData(commandeString)) {
 			printf("\nDetection data");
 
-			tailleData = cherchertype(30, commandeString);
+			plop = cherchertype(30, commandeString);
+
+			(*tailleData) = (plop);
 
 			indice = chercherValeur(30, commandeString)+1;
 
-			encodageData(indice, commandeString, commandeBinaire, dataNom, tailleData);
+			encodageData(indice, commandeString, dataBinaire, dataNom, *tailleData);
 
 			printf("\n%d\n", tailleData);
 
@@ -122,7 +125,7 @@ int decodageInstruction(char commandeString[], char dataBinaire[], int *tailleDa
 			case 'a' : /* ADD, ADDI ou AND */
 
 				if(commandeString[i+3] == 'i') { /* ADDI */
-					encodageInstructionI("001000","111",commandeBinaire, commandeString);
+					encodageInstructionI(listeDatas,"001000","111",commandeBinaire, commandeString);
 				} else { /* ADD ou AND */
 					if(commandeString[i+1] == 'd') { /* ADD */
 						encodageInstructionR("000000","100000","1110",commandeBinaire, commandeString);				
@@ -137,16 +140,16 @@ int decodageInstruction(char commandeString[], char dataBinaire[], int *tailleDa
 
 				switch(commandeString[i+1]) {
 					case 'e' : /* BEQ */
-						encodageInstructionI("000100","111",commandeBinaire, commandeString);
+						encodageInstructionI(listeDatas,"000100","111",commandeBinaire, commandeString);
 					break;
 					case 'n' : /* BNE */
-						encodageInstructionI("000100","111",commandeBinaire, commandeString);
+						encodageInstructionI(listeDatas,"000100","111",commandeBinaire, commandeString);
 					break;
 					case 'g' : /* BGTZ */
-						encodageInstructionI("000111","101",commandeBinaire, commandeString);
+						encodageInstructionI(listeDatas,"000111","101",commandeBinaire, commandeString);
 					break;
 					case 'l' : /* BLEZ */
-						encodageInstructionI("000110","101",commandeBinaire, commandeString);
+						encodageInstructionI(listeDatas,"000110","101",commandeBinaire, commandeString);
 					break;
 				}
 
@@ -171,9 +174,12 @@ int decodageInstruction(char commandeString[], char dataBinaire[], int *tailleDa
 			break;
 			case 'l' : /* LUI ou LW */
 				if(commandeString[i+1] == 'u') { /* LUI */
-					encodageInstructionI("001111","011",commandeBinaire, commandeString);				
+					encodageInstructionI(listeDatas,"001111","011",commandeBinaire, commandeString);				
 				} else { /* LW */
-					encodageInstructionI("100011","111",commandeBinaire, commandeString);					
+					encodageInstructionI(listeDatas,"001111",'011',commandeBinaire, "lui $at, 4097");
+					convertCommande( commandeBinaire, commandeHexa);
+					insererCommande( listeCommandes, commandeBinaire, commandeHexa, commandeString);
+					encodageInstructionI(listeDatas,"100011","212",commandeBinaire, commandeString);					
 				}
 
 			break;
@@ -207,7 +213,7 @@ int decodageInstruction(char commandeString[], char dataBinaire[], int *tailleDa
 			case 's' : /* SUB, SLL, SRL, SLT ou SW */
 
 				if(commandeString[i+1] == 'w') { /* SW */
-					encodageInstructionI("101011","211",commandeBinaire, commandeString);
+					encodageInstructionI(listeDatas,"101011","211",commandeBinaire, commandeString);
 				} else if(commandeString[i+1] == 'u') { /* SUB */
 					encodageInstructionR("000000","100010","1110",commandeBinaire, commandeString);				
 				}else if(commandeString[i+1] == 'r'){ /*  SRL */
@@ -321,17 +327,48 @@ void encodageInstructionR(char opcode[], char function[],  char operandes[], cha
 	}	
 }
 
-void encodageInstructionI(char opcode[],  char operandes[], char commandeBinaire[], char commandeString[]) {
+void encodageInstructionI( listeData *listeDatas, char opcode[],  char operandes[], char commandeBinaire[], char commandeString[]) {
 	/* Opcode est l'opcode */
 	/* operande (4 char) represante rs, rt et immediate : */
 	/* 1 : si plein */
 	/* 0 : si vide */
-	/* 2 : cas du SW */
+	/* 2 : cas du SW et LW */
 
 	int indice = 30;
+	int j=31;
+	int trouve = 0;
+
+	data *d;
+	d = *listeDatas;
 
 	for(int i=31; i>25; i--) {
 		commandeBinaire[i] = opcode[31-i];
+	}
+
+	if(operandes[0]=='2') {
+		 do{
+		 	j--;
+		 	if(commandeString[j]>=97 && commandeString[j]<=122) {
+		 		trouve = 1;
+		 	}else if(trouve == 1) {
+		 		trouve = 2;
+		 	}
+		 }while(trouve<2 && j>=0);
+
+
+		do {
+			 if(d->nom[0] = commandeString[j+1]) {
+			 	for (int i = 0; i < 8; ++i)
+			 	{
+			 		commandeBinaire[i] = d->adresse[i];
+			 	}
+			 }else {
+			 	d = d->suivant;
+			 }			
+		}while(d != NULL);
+
+		encodageInstructionRegistre(&indice,20,1, commandeBinaire, commandeString);
+		return;
 	}
 
 	/* immediate */
@@ -344,7 +381,7 @@ void encodageInstructionI(char opcode[],  char operandes[], char commandeBinaire
 	/* Rs */
 	if (operandes[0] == '1') {
 		encodageInstructionRegistre(&indice,25,1, commandeBinaire, commandeString);
-	} else {
+	}else {
 		encodageInstructionRegistre(&indice,25,0, commandeBinaire, commandeString);
 	}
 
@@ -373,10 +410,6 @@ void encodageLabels(char commandeString[], char labelNom[]) {
 /* cette procédure va récuperer le nom du nouveau label */
 	int i, decalage;
 	i=0;
-
-	while(commandeString[i] == ' ') {
-		i++;
-	}
 
 	while(commandeString[i] != ':') {
 		labelNom[i] = commandeString[i];
@@ -507,6 +540,10 @@ void encodageData(int indice, char commandeString[], char dataBinaire[], char da
 	while(((commandeString[i] >= 65) && (commandeString[i] <= 90)) || ((commandeString[i]) >= 97 && (commandeString[i] <= 122)) ) {
 		dataNom[i-indice] = commandeString[i];
 		i++;
+	}
+
+	for(int j = i-indice; j<10; j++) {
+		dataNom[j] = ' ';
 	}
 
 }
