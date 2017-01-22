@@ -1,0 +1,5 @@
+ADDI $t1, $t1, 5
+ADD $v0, $t1, $v0
+ADDI $v0, $v0, 1
+AND $v1, $v0, $t1
+MFHI $t1

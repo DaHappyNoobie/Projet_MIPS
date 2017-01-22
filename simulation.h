@@ -8,6 +8,7 @@
 typedef struct commandeStructure commande;
 struct commandeStructure {
 
+	unsigned char codeString[30];
 	unsigned char adresse[8];
 	unsigned char codeBinaire[32]; /* Commande au format binaire */
 	unsigned char codeHexa[8];
@@ -32,42 +33,43 @@ struct labelStructure {
 typedef label *listeLabel;
 
 /* ******************************************************************** */
-/* variables d'encodages */ 
+/* structure de la liste chainee de la data */
 
-char commandeString[30];
-unsigned char commandeBinaire[32];
-unsigned char commandeHexa[8];
-unsigned char labelNom[10];
+typedef struct dataStructure data;
+struct dataStructure {
 
-/* ******************************************************************** */
-/* variables de stockages pour l'encodage */ 
-/* variable qui servira a stocker des addresses/valeurs en bit */
+	unsigned char adresse[8];
+	unsigned char nom[10];
+	int taille; /* taille en octet */
+	unsigned char dataValeur[32]; /* data au format binaire */
 
-char registreBinaire[5]; 
-char valeurBinaire[5];
-char immediatBinaire[26];
+	struct dataStructure* suivant; /* adresse du successeur */
+};
 
-/* ******************************************************************** */
-/* liste chainee pour la simulation */
-
-listeCommande listeCommandes;
-listeLabel listeLabels;
+typedef data *listeData;
 
 /* ******************************************************************** */
 /* Fonctions de la liste chainé contenant les commandes */
 
-void insererCommande(listeCommande *l);
+void insererCommande(listeCommande *l,char commandeBinaire[],char commandeHexa[], char commandeString[]);
 commande* commandeNouveau();
 void creationAdresseInstruction(listeCommande *cou, listeCommande *nouv, int indice);
 
 /* ******************************************************************** */
 /* Fonctions de la liste chainé contenant les labels */
 
-void insererLabel(listeLabel *l, listeCommande *ll);
+void insererLabel(listeLabel *l, listeCommande *ll, char labelNom[]);
 label* labelNouveau();
 void creationAdresseLabel(listeCommande *cou, listeLabel *nouv, int indice);
 
 /* ******************************************************************** */
+/* Fonctions de la liste chainé contenant la Data */
+
+void insererData(listeData *l, char dataBinaire[], char dataNom[], int tailleData);
+void creationAdresseData(listeData *cou, listeData *nouv, int indice);
+data* dataNouveau();
+
+/* ******************************************************************** */
 /* Fonctions communes */
 
-void affichageStringCommande();
+void affichageStringCommande(char commandeString[]);
