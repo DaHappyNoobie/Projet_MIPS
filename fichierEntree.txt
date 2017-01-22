@@ -1,0 +1,12 @@
+addi $t1, $t1, 5
+add $v0, $t1, $v0
+addi $v0, $v0, 6
+and $v1, $v0, $t1
+div $v1, $t1
+mult $v1, $t1
+or $v1, $v0, $t1
+slt $v1, $v1, $t1
+sub $v1, $v0, $t1
+xor $s0, $v1, $t1
+mfhi $t1
+mflo $v0
